@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorMe - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <img src="mentorme_logo.png" alt="MentorMe Logo" class="logo">
+        <h1>Login to MentorMe</h1>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+            <p class="create-account-text">Don't have an account? <button type="button" id="createAccountBtn">Create Account</button></p>
+        </form>
+
+        <!-- Create Account Form (Initially hidden) -->
+        <form id="createAccountForm" style="display: none;">
+            <input type="email" id="createEmail" placeholder="Email" required>
+            <input type="text" id="createUsername" placeholder="Username" required>
+            <input type="password" id="createPassword" placeholder="Password" required>
+            <input type="text" id="createIndustry" placeholder="Industry" required>
+            <input type="number" id="createSchoolYear" placeholder="School Year" required>
+            <select id="createUserType">
+                <option value="Mentor">Mentor</option>
+                <option value="Mentee">Mentee</option>
+                <option value="Manager">Manager</option>
+            </select>
+            <button type="submit">Create Account</button>
+            <p class="cancel-create-account-text">Cancel <button type="button" id="cancelCreateAccountBtn">X</button></p>
+        </form>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
