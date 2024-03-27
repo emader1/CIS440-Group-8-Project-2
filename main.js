@@ -43,23 +43,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     .catch(error => console.error('Error:', error));
 });
 
-// main.js (Add this code if you want to handle logout in frontend)
-document.querySelector('nav ul li:nth-child(2) a').addEventListener('click', function(e) {
-    e.preventDefault();
-
-    // Send GET request to backend for logout
-    fetch('http://localhost:5000/logout', {
-        method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data); // Handle response from backend
-        alert('Logged out successfully'); // Display success message
-        window.location.href = 'index.html'; // Redirect to login page
-    })
-    .catch(error => console.error('Error:', error));
-});
-
+// Placeholder for create account functionality
 document.getElementById('createAccountForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
