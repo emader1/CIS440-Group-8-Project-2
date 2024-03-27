@@ -16,15 +16,20 @@ body {
 
 input[type="email"],
 input[type="password"],
-button {
+input[type="text"] {
     display: block;
-    width: 100%;
+    width: calc(100% - 20px); /* Adjusted width to match email and password textboxes */
     margin-bottom: 10px;
     padding: 10px;
     box-sizing: border-box;
 }
 
 button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-sizing: border-box;
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -35,10 +40,9 @@ button:hover {
     background-color: #0056b3;
 }
 
-header {
-    background-color: #f8f9fa;
-    padding: 10px 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* Added CSS for Cancel Button */
+button#cancelCreateAccountBtn {
+    background-color: #dc3545; /* Red color */
 }
 
 nav ul {
