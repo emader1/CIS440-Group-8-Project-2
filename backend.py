@@ -14,6 +14,7 @@ db_connection = mysql.connector.connect(
     database="spring2024Cteam8"
 )
 
+
 # Login endpoint
 @app.route('/login', methods=['POST'])
 def login():
@@ -29,11 +30,25 @@ def login():
         cursor.close()  # Close the cursor after consuming the result
 
         if user:
-            return jsonify({'message': 'Login successful', 'user': user}), 200
+            user_dict = {
+                'id': user[0],
+                'email': user[1],
+                'username': user[2],
+                'industry': user[3],
+                'school_year': user[4],
+                'user_type': user[5]
+            }
+            # Manually commit the changes and close the connection after consuming the result
+            db_connection.commit()
+            db_connection.close()
+            return jsonify({'message': 'Login successful', 'user': user_dict}), 200
         else:
+            # Close the connection if no user is found
+            db_connection.close()
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
-        cursor.close()  # Close the cursor in case of an exception
+        # Close the connection in case of an exception
+        db_connection.close()
         return jsonify({'message': f'Error: {str(e)}'}), 500
 
 # Create account endpoint
