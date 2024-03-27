@@ -65,5 +65,30 @@ def logout():
     # Clear any session data or cookies if needed
     return jsonify({'message': 'Logged out successfully'}), 200
 
+@app.route('/matches', methods=['GET'])
+def get_matches():
+    # Get the user's industry from the request
+    industry = request.args.get('industry')
+
+    cursor = db_connection.cursor()
+    try:
+        # Fetch mentees available to mentors in the same industry
+        sql_mentees = "SELECT * FROM users WHERE user_type = 'Mentee' AND industry = %s"
+        cursor.execute(sql_mentees, (industry,))
+        mentees = cursor.fetchall()
+
+        # Fetch mentors available to mentees in the same industry
+        sql_mentors = "SELECT * FROM users WHERE user_type = 'Mentor' AND industry = %s"
+        cursor.execute(sql_mentors, (industry,))
+        mentors = cursor.fetchall()
+
+        cursor.close()
+
+        # Return available matches
+        return jsonify({'mentees': mentees, 'mentors': mentors}), 200
+    except Exception as e:
+        cursor.close()
+        return jsonify({'message': f'Error fetching matches: {str(e)}'}), 500
+        
 if __name__ == '__main__':
     app.run(debug=True)

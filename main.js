@@ -11,6 +11,29 @@ document.getElementById('cancelCreateAccountBtn').addEventListener('click', func
     document.getElementById('createAccountForm').style.display = 'none';
     document.getElementById('loginForm').style.display = 'block';
 });
+// main.js (Update dashboard functionality)
+
+// Fetch and display available matches based on user's industry
+function fetchMatches(industry) {
+    fetch(`http://localhost:5000/matches?industry=${industry}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data); // Handle response from backend
+            // Display available matches on the dashboard
+            // You can customize this based on your UI requirements
+            document.getElementById('menteesList').innerHTML = JSON.stringify(data.mentees);
+            document.getElementById('mentorsList').innerHTML = JSON.stringify(data.mentors);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Example: Fetch matches when the dashboard page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Assuming you have the user's industry available in a variable
+    const userIndustry = 'YourUserIndustry'; // Replace 'YourUserIndustry' with actual industry
+    fetchMatches(userIndustry);
+});
+
 
 // Placeholder for login functionality
 document.getElementById('loginForm').addEventListener('submit', function(e) {
