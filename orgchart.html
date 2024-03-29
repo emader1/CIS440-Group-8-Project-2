@@ -1,1 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorMe - Personalized Org Chart</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loginSection" class="container">
+        <h1>Login to MentorMe</h1>
+        <select id="testUsers">
+            <option value="manager1">Sophia Martinez - Manager</option>
+            <option value="manager2">Isabella Anderson - Manager</option>
+            <option value="manager3">Noah Thomas - Manager</option>
+            <option value="mentor1">John Doe - Mentor</option>
+            <option value="mentor2">Jane Smith - Mentor</option>
+            <option value="mentor3">Mike Johnson - Mentor</option>
+            <option value="mentee1">Emily Davis - Mentee</option>
+            <option value="mentee2">Olivia Brown - Mentee</option>
+            <option value="mentee3">Liam Wilson - Mentee</option>
+        </select>
+        <button onclick="login()">Login</button>
+    </div>
 
+    <div id="dashboardSection" class="container hidden">
+        <h1>Welcome, <span id="userName"></span>!</h1>
+        <div id="orgChart" class="hidden"></div>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
+
+*--------------------------
+
+
+const users = {
+    manager1: { name: "Sophia Martinez", role: "Manager", children: ["mentor1"] },
+    manager2: { name: "Isabella Anderson", role: "Manager", children: ["mentor2"] },
+    manager3: { name: "Noah Thomas", role: "Manager", children: ["mentor3"] },
+    mentor1: { name: "John Doe", role: "Mentor", parent: "manager1", children: ["mentee1"] },
+    mentor2: { name: "Jane Smith", role: "Mentor", parent: "manager2", children: ["mentee2"] },
+    mentor3: { name: "Mike Johnson", role: "Mentor", parent: "manager3", children: ["mentee3"] },
+    mentee1: { name: "Emily Davis", role: "Mentee", parent: "mentor1" },
+    mentee2: { name: "Olivia Brown", role: "Mentee", parent: "mentor2" },
+    mentee3: { name: "Liam Wilson", role: "Mentee", parent: "mentor3" },
+};
+
+function login() {
+    const userId = document.getElementById('testUsers').value;
+    const user = users[userId];
+    document.getElementById('userName').textContent = user.name + ' - ' + user.role;
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('dashboardSection').classList.remove('hidden');
+    generateOrgChart(userId);
+}
+
+function logout() {
+    document.getElementById('dashboardSection').classList.add('hidden');
+    document.getElementById('loginSection').classList.remove('hidden');
+}
+
+function generateOrgChart(userId) {
+    const orgChartDiv = document.getElementById('orgChart');
+    orgChartDiv.innerHTML = ''; // Clear previous org chart
+    let user = users[userId];
+    
+    // Depending on the role, fetch the appropriate hierarchy
+    if (user.role === 'Mentee') {
+        let mentor = users[user.parent];
+        let manager = users[mentor.parent];
+        user = manager; // Start from the top for generating the chart
+    } else if (user.role === 'Mentor') {
+        let manager = users[user.parent];
+        user = manager; // Start from the manager
+    }
+    
+    const html = generateOrgChartHtml(user, users);
+    orgChartDiv.innerHTML = html;
+    orgChartDiv.classList.remove('hidden');
+}
+
+function generateOrgChartHtml(user, users) {
+    let html = `<li><a href="#">${user.name} - ${user.role}</a>`;
+    if (user.children) {
+        html += '<ul>';
+        user.children.forEach(childId => {
+            const child = users[childId];
+            html += generateOrgChartHtml(child, users); // Recursive call to handle multiple levels
+        });
+        html += '</ul>';
+    }
+    html += '</li>';
+    return html;
+}
+
+
+*-------------------------
+
+const users = {
+    manager1: { name: "Sophia Martinez", role: "Manager", children: ["mentor1"] },
+    manager2: { name: "Isabella Anderson", role: "Manager", children: ["mentor2"] },
+    manager3: { name: "Noah Thomas", role: "Manager", children: ["mentor3"] },
+    mentor1: { name: "John Doe", role: "Mentor", parent: "manager1", children: ["mentee1"] },
+    mentor2: { name: "Jane Smith", role: "Mentor", parent: "manager2", children: ["mentee2"] },
+    mentor3: { name: "Mike Johnson", role: "Mentor", parent: "manager3", children: ["mentee3"] },
+    mentee1: { name: "Emily Davis", role: "Mentee", parent: "mentor1" },
+    mentee2: { name: "Olivia Brown", role: "Mentee", parent: "mentor2" },
+    mentee3: { name: "Liam Wilson", role: "Mentee", parent: "mentor3" },
+};
+
+function login() {
+    const userId = document.getElementById('testUsers').value;
+    const user = users[userId];
+    document.getElementById('userName').textContent = user.name + ' - ' + user.role;
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('dashboardSection').classList.remove('hidden');
+    generateOrgChart(userId);
+}
+
+function logout() {
+    document.getElementById('dashboardSection').classList.add('hidden');
+    document.getElementById('loginSection').classList.remove('hidden');
+}
+
+function generateOrgChart(userId) {
+    const orgChartDiv = document.getElementById('orgChart');
+    orgChartDiv.innerHTML = ''; // Clear previous org chart
+    let user = users[userId];
+    
+    // Depending on the role, fetch the appropriate hierarchy
+    if (user.role === 'Mentee') {
+        let mentor = users[user.parent];
+        let manager = users[mentor.parent];
+        user = manager; // Start from the top for generating the chart
+    } else if (user.role === 'Mentor') {
+        let manager = users[user.parent];
+        user = manager; // Start from the manager
+    }
+    
+    const html = generateOrgChartHtml(user, users);
+    orgChartDiv.innerHTML = html;
+    orgChartDiv.classList.remove('hidden');
+}
+
+function generateOrgChartHtml(user, users) {
+    let html = `<li><a href="#">${user.name} - ${user.role}</a>`;
+    if (user.children) {
+        html += '<ul>';
+        user.children.forEach(childId => {
+            const child = users[childId];
+            html += generateOrgChartHtml(child, users); // Recursive call to handle multiple levels
+        });
+        html += '</ul>';
+    }
+    html += '</li>';
+    return html;
+}
+
+-------------------------
+
+body { font-family: Arial, sans-serif; }
+.hidden { display: none; }
+.container { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ccc; }
+.org-chart { list-style-type: none; }
+.org-chart li { margin: 10px; padding: 0; position: relative; }
+.org-chart li:before, .org-chart li:after {
+    content: ''; position: absolute; left: -20px; border-left: 2px solid #333;
+}
+.org-chart li:before {
+    top: -20px; bottom: 50%; 
+}
+.org-chart li:after {
+    top: 50%; height: 100%; 
+}
+.org-chart li:last-child:after { display: none; }
+.org-chart a {
+    padding: 5px 10px; background: #eee; color: #333; text-decoration: none; display: inline-block; border-radius: 5px;
+}
