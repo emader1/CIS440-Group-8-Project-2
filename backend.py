@@ -14,7 +14,6 @@ db_connection = mysql.connector.connect(
     database="spring2024Cteam8"
 )
 
-
 # Login endpoint
 @app.route('/login', methods=['POST'])
 def login():

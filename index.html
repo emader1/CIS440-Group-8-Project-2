@@ -7,31 +7,71 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <img src="mentorme_logo.png" alt="MentorMe Logo" class="logo">
-        <h1>Login to MentorMe</h1>
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit">Login</button>
-            <p class="create-account-text">Don't have an account? <button type="button" id="createAccountBtn">Create Account</button></p>
-        </form>
+    <div class="content">
+        <div class="main login col-lg-03 col-md-06 col-sm-12 white">
+            <form id="loginForm">
+                <h1>MentorMe</h1>
+                    <!-- Email entry form. -->
+                    <p>Email</p>
+                    <input type="email" id="email" placeholder="e.g. jdoe@asu.edu" required>
+                    <!-- Password entry form. -->
+                    <p>Password</p>
+                    <input type="password" id="password" placeholder="e.g. abc123" required>
+                    <br>
+                    <!-- Login/New Account buttons. -->
+                    <div class="button_container">
+                        <button type="submit">Login</button>
+                        <button type="submit" id="createAccountBtn">Create Account</button>
+                    </div>
+            </form>
+    
+            <form id="createAccountForm" style="display: none;">
+                <h1>MentorMe</h1>
+                    <!-- Email entry form. -->
+                    <p>Email</p>
+                    <input type="email" id="createEmail" placeholder="e.g. jdoe@asu.edu" required>
+                    <!-- Username entry form. -->
+                    <p>Username</p>
+                    <input type="text" id="createUsername" placeholder="e.g. jdoe123" required>
+                    <!-- Password entry form. -->
+                    <p>Password</p>
+                    <input type="password" id="createPassword" placeholder="e.g. abc123" required>
 
-        <!-- Create Account Form (Initially hidden) -->
-        <form id="createAccountForm" style="display: none;">
-            <input type="email" id="createEmail" placeholder="Email" required>
-            <input type="text" id="createUsername" placeholder="Username" required>
-            <input type="password" id="createPassword" placeholder="Password" required>
-            <input type="text" id="createIndustry" placeholder="Industry" required>
-            <input type="number" id="createSchoolYear" placeholder="School Year" required>
-            <select id="createUserType">
-                <option value="Mentor">Mentor</option>
-                <option value="Mentee">Mentee</option>
-                <option value="Manager">Manager</option>
-            </select>
-            <button type="submit">Create Account</button>
-            <p class="cancel-create-account-text"><button type="button" id="cancelCreateAccountBtn">Cancel</button></p>
-        </form>
+                    <div class="selector_container">
+                        <!-- Industry selector. -->
+                        <select name="Industry" id="createIndustry">
+                            <option value="">Industry</option>
+                            <option value="Tech">Tech</option>
+                            <option value="Finance">Finance</option>
+                        </select>
+
+                        <!-- User type selector. -->
+                        <select id="createUserType">
+                            <option value="">Role</option>
+                            <option value="Mentee">Mentee</option>
+                            <option value="Mentor">Mentor</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="selector_container">
+                        <!-- School year selector. -->
+                        <select name="School Year" id="createSchoolYear" style="display: none;">
+                            <option value="">School Year</option>
+                            <option value="Freshman">Freshman</option>
+                            <option value="Sophomore">Sophomore</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                        </select>
+                    </div>
+
+                    <!-- Create account/cancel buttons. -->
+                    <div class="button_container">
+                        <button type="submit">Create Account</button>
+                        <button type="submit" id="cancelCreateAccountBtn">Cancel</button></p>
+                    </div>
+            </form>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>

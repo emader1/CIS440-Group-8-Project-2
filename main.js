@@ -1,17 +1,26 @@
-// main.js
-
-// Show create account form when "Create Account" button is clicked
+// Shows the create account form when "Create Account" button is clicked.
 document.getElementById('createAccountBtn').addEventListener('click', function() {
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('createAccountForm').style.display = 'block';
 });
 
-// Hide create account form and show login form when "Cancel" button is clicked
+// Hides the create account form and shows login form when "Cancel" button is clicked.
 document.getElementById('cancelCreateAccountBtn').addEventListener('click', function() {
     document.getElementById('createAccountForm').style.display = 'none';
     document.getElementById('loginForm').style.display = 'block';
 });
-// main.js (Update dashboard functionality)
+
+// Shows the school year selector when "mentee" is selected.
+document.getElementById('createUserType').addEventListener('change', function() {
+    var selectedValue = this.value;
+    var userTypeSelect = document.getElementById('createSchoolYear');
+
+if (selectedValue === 'Mentee') {
+    userTypeSelect.style.display = 'block';
+} else if (selectedValue === 'Mentor' || selectedValue === 'Manager') {
+    userTypeSelect.style.display = 'none';
+}
+});
 
 // Fetch and display available matches based on user's industry
 function fetchMatches(industry) {
