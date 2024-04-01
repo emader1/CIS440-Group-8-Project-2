@@ -7,39 +7,103 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Title -->
     <div class="row">
-        <div class="head col-lg-12 col-md-12 col-sm-12 white"><h1>MentorMe - Org-chart</h1></div>
+        <div class="head col-lg-12 col-md-12 col-sm-12 white">
+            <h1>MentorMe - Org-chart</h1>
+        </div>
     </div>
-    <!-- Menu -->
     <div class="row">
         <div class="menu col-lg-02 col-md-02 col-sm-12 white">
             <li><a href="dashboard.html">Home</a></li>
             <li><a href="matches.html">Org-chart</a></li>
             <li><a href="index.html">Logout</a></li>
         </div>
-        <!-- Body -->
-        <div class="main col-lg-10 col-md-10 col-sm-12 white" >
-            <h2>Overview</h2>
-            <p>
-                <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vel ipsam, est fuga sunt explicabo facilis optio aliquam porro placeat? Obcaecati, quod vitae quis dolorum laudantium aspernatur dolorem provident debitis sapiente?</span>
-                <span>Nulla ipsa consequatur enim velit? Soluta quasi cumque natus fuga iste blanditiis veritatis quidem, animi beatae culpa delectus voluptate, aspernatur voluptatum atque at minima, ratione sequi aut alias totam qui.</span>
-                <span>Expedita harum laboriosam animi earum odit, in soluta dolorum quisquam nemo rem, beatae ad minus, maiores, maxime corporis! Veritatis fuga quaerat ipsa laboriosam est tempore adipisci commodi cupiditate a obcaecati.</span>
-                <span>Alias quaerat aspernatur voluptatum officia totam omnis, explicabo nihil veritatis. Laboriosam at necessitatibus reiciendis, omnis ea! Saepe eum fugiat, iure temporibus ullam officia, ad earum, nulla vitae molestias quis soluta.</span>
-            </p>
-            <p>
-                <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Debitis, quis harum. Id laudantium repellendus nihil accusamus quos iusto repellat temporibus fugit facere porro enim odit, magnam, ipsum perferendis esse illum.</span>
-                <span>Ad incidunt earum praesentium veritatis tempore ipsam alias accusamus? Placeat in, facilis sint minima voluptate optio autem, at. Saepe modi vel totam quasi hic voluptatum rerum, omnis ducimus natus deleniti.</span>
-                <span>Perferendis commodi ab, sit inventore qui facere facilis numquam vitae illum ea, rem nesciunt quisquam ratione incidunt aliquam sunt harum beatae dolor, veritatis aperiam. Quibusdam a earum voluptates magnam, quae.</span>
-                <span>Doloremque nihil dignissimos nemo minima, hic, perspiciatis consequuntur quibusdam, magnam vero consectetur assumenda! </span>
-            </p>
+        <div class="main col-lg-10 col-md-10 col-sm-12 white">
+            <div id="userSelection" class="container">
+                <h2>Select your profile:</h2>
+                <select id="userProfile">
+                    <option value="manager1">Sophia Martinez - Manager</option>
+                    <option value="mentor1">John Doe - Mentor</option>
+                    <option value="mentee1">Emily Davis - Mentee</option>
+                </select>
+                <button onclick="selectUser()">Select</button>
+            </div>
+            <div id="relationSelection" class="container hidden">
+                <h2>Select from the list:</h2>
+                <select id="relatedUsers"></select>
+            </div>
+            <div id="orgChart" class="hidden"></div>
         </div>
     </div>
-    <!-- Footer -->
     <div class="row">
         <div class="foot col-lg-12 col-md-12 col-sm-12 white">
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fuga placeat ipsum quaerat cumque reprehenderit, iusto soluta quia nostrum reiciendis debitis rem facere doloremque quasi. Tenetur dolore molestiae inventore cum incidunt.</p>
+            <p>Footer content here...</p>
         </div>
-    <script src="main.js"></script>
+    </div>
+
+    <script>
+        const users = {
+            manager1: { name: "Sophia Martinez", role: "Manager", children: ["mentor1", "mentor2", "mentor3"] },
+            mentor1: { name: "John Doe", role: "Mentor", children: ["mentee1", "mentee2"] },
+            mentor2: { name: "Jane Smith", role: "Mentor", children: ["mentee3"] },
+            mentor3: { name: "Mike Johnson", role: "Mentor", children: [] },
+            mentee1: { name: "Emily Davis", role: "Mentee", mentors: ["mentor1"] },
+            mentee2: { name: "Olivia Brown", role: "Mentee", mentors: ["mentor1"] },
+            mentee3: { name: "Liam Wilson", role: "Mentee", mentors: ["mentor2"] },
+        };
+
+        function selectUser() {
+            const userId = document.getElementById('userProfile').value;
+            const user = users[userId];
+            updateRelatedUsers(user);
+            generateOrgChart(userId);
+        }
+
+        function updateRelatedUsers(user) {
+            const relatedSelect = document.getElementById('relatedUsers');
+            relatedSelect.innerHTML = '';
+
+            let relatedUsers = [];
+            if (user.role === 'Mentor') {
+                relatedUsers = user.children.map(childId => users[childId]);
+            } else if (user.role === 'Mentee') {
+                relatedUsers = user.mentors.map(mentorId => users[mentorId]);
+            }
+
+            relatedUsers.forEach(relatedUser => {
+                const option = document.createElement('option');
+                option.value = relatedUser.name;
+                option.text = `${relatedUser.name} - ${relatedUser.role}`;
+                relatedSelect.appendChild(option);
+            });
+
+            if (relatedUsers.length > 0) {
+                document.getElementById('relationSelection').classList.remove('hidden');
+            }
+        }
+
+        function generateOrgChart(userId) {
+            const orgChartDiv = document.getElementById('orgChart');
+            orgChartDiv.innerHTML = '';
+            let user = users[userId];
+            const html = generateOrgChartHtml(user, users);
+            orgChartDiv.innerHTML = html;
+            orgChartDiv.classList.remove('hidden');
+        }
+
+        function generateOrgChartHtml(user, users) {
+            let html = `<li><a href="#">${user.name} - ${user.role}</a>`;
+            if (user.children && user.children.length > 0) {
+                html += '<ul>';
+                user.children.forEach(childId => {
+                    const child = users[childId];
+                    html += generateOrgChartHtml(child, users);
+                });
+                html += '</ul>';
+            }
+            html += '</li>';
+            return html;
+        }
+    </script>
 </body>
 </html>
