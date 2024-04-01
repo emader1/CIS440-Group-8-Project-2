@@ -1,29 +1,57 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
+from flask_session import Session
 import mysql.connector
 from flask_cors import CORS
+import secrets
+
+secret_key = secrets.token_bytes(16)
+secret_key_hex = secrets.token_hex(16)
+
+print(secret_key_hex)
+
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-# MySQL database connection details
-db_connection = mysql.connector.connect(
-    host="107.180.1.16",
-    port="3306",
-    user="spring2024Cteam8",
-    password="spring2024Cteam8",
-    database="spring2024Cteam8"
-)
+CORS(app)
+app.secret_key = secret_key_hex  # Set a secret key for session management
+app.config['SESSION_TYPE'] = 'filesystem'  # Configure session type (can be 'filesystem', 'redis', etc.)
+app.config['SESSION_COOKIE_NAME'] = 'my_session_cookie'  # Set a session cookie name
+Session(app)
+
+# Function to create a new database connection
+def create_db_connection():
+    return mysql.connector.connect(
+        host="107.180.1.16",
+        port="3306",
+        user="spring2024Cteam8",
+        password="spring2024Cteam8",
+        database="spring2024Cteam8"
+    )
+
+# Initialize db_connection globally
+db_connection = None
+
+# Function to initialize db_connection if not already initialized
+def initialize_db_connection():
+    global db_connection
+    if db_connection is None:
+        db_connection = create_db_connection()
+
+# Login endpoint
 # Login endpoint
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data['email']
     password = data['password']
+
+    initialize_db_connection()  # Ensure db_connection is initialized
     cursor = db_connection.cursor()
+
     try:
         sql = "SELECT * FROM users WHERE email = %s AND password = %s"
         values = (email, password)
         cursor.execute(sql, values)
         user = cursor.fetchone()  # Fetch the user data
-        cursor.close()  # Close the cursor after consuming the result
+
         if user:
             user_dict = {
                 'id': user[0],
@@ -33,19 +61,59 @@ def login():
                 'school_year': user[4],
                 'user_type': user[5]
             }
-            # Manually commit the changes and close the connection after consuming the result
-            db_connection.commit()
-            db_connection.close()
+
+            # Store user data in the session
+            session['user'] = user_dict
+
             return jsonify({'message': 'Login successful', 'user': user_dict}), 200
         else:
-            # Close the connection if no user is found
-            db_connection.close()
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
-        # Close the connection in case of an exception
-        db_connection.close()
         return jsonify({'message': f'Error: {str(e)}'}), 500
-# Create account endpoint
+    finally:
+        cursor.close()
+
+
+# Function to fetch matches from the database based on user type and industry
+
+# Function to fetch matches from the database based on user type and industry
+@app.route('/fetch-matches', methods=['GET'])
+def fetch_matches():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    matches = query_matches(user_dict)
+
+    print('Matches found:', matches)  # Print matches to console for verification
+
+    return jsonify({'matches': matches}), 200
+
+def query_matches(user_dict):
+    user_type = user_dict['user_type']
+    industry = user_dict['industry']
+
+    cursor = db_connection.cursor()
+
+    try:
+        if user_type == 'Mentee':
+            sql = "SELECT * FROM users WHERE user_type = 'Mentor' AND industry = %s"
+        elif user_type == 'Mentor':
+            sql = "SELECT * FROM users WHERE user_type = 'Mentee' AND industry = %s"
+        elif user_type == 'Manager':
+            sql = "SELECT * FROM users WHERE industry = %s"
+        else:
+            return []  # Return an empty list for invalid user types
+
+        cursor.execute(sql, (industry,))
+        matches = cursor.fetchall()
+        return matches
+    except Exception as e:
+        return []  # Return an empty list if there's an error fetching matches
+    finally:
+        cursor.close()
+
+
 @app.route('/create-account', methods=['POST'])
 def create_account():
     data = request.get_json()
@@ -55,49 +123,28 @@ def create_account():
     industry = data['industry']
     school_year = data['school_year']
     user_type = data['user_type']
+
+    initialize_db_connection()  # Ensure db_connection is initialized
     cursor = db_connection.cursor()
+
     try:
         sql = "INSERT INTO users (email, username, password, industry, school_year, user_type) VALUES (%s, %s, %s, %s, %s, %s)"
         values = (email, username, password, industry, school_year, user_type)
         cursor.execute(sql, values)
         db_connection.commit()  # Commit the changes to the database
-        cursor.close()
         return jsonify({'message': 'Account created successfully', 'email': email, 'username': username, 'user_type': user_type}), 200
     except Exception as e:
-        cursor.close()
         return jsonify({'message': f'Error creating account: {str(e)}'}), 500
+    finally:
+        cursor.close()
+
 # Logout endpoint
 @app.route('/logout', methods=['GET'])
 def logout():
-    # Clear any session data or cookies if needed
+    # Clear session data
+    session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
-@app.route('/matches', methods=['GET'])
-def get_matches():
-    # Get the user's industry from the request
-    industry = request.args.get('industry')
-    cursor = db_connection.cursor()
-    try:
-        # Fetch mentees available to mentors in the same industry
-        sql_mentees = "SELECT * FROM users WHERE user_type = 'Mentee' AND industry = %s"
-        cursor.execute(sql_mentees, (industry,))
-        mentees = cursor.fetchall()
-        # Fetch mentors available to mentees in the same industry
-        sql_mentors = "SELECT * FROM users WHERE user_type = 'Mentor' AND industry = %s"
-        cursor.execute(sql_mentors, (industry,))
-        mentors = cursor.fetchall()
-        cursor.close()
-        # Return available matches
-        return jsonify({'mentees': mentees, 'mentors': mentors}), 200
-    except Exception as e:
-        cursor.close()
-        return jsonify({'message': f'Error fetching matches: {str(e)}'}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
-
-
