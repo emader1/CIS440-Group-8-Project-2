@@ -3,29 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MentorMe - Matches</title>
+    <title>MentorMe - Org-chart</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Available Matches</h1>
-        <nav>
-            <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="#">Logout</a></li> <!-- Add logout link -->
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <h2>Mentees Available to Mentors</h2>
-        <ul id="menteesList"></ul>
+    <div class="row">
+        <div class="head col-lg-12 col-md-12 col-sm-12 white">
+            <h1>MentorMe - Org-chart</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="menu col-lg-02 col-md-02 col-sm-12 white">
+            <li><a href="dashboard.html">Home</a></li>
+            <li><a href="matches.html">Org-chart</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </div>
+        <div class="main col-lg-10 col-md-10 col-sm-12 white">
+            <div id="userSelection" class="container">
+                <h2>Select your profile:</h2>
+                <select id="userProfile">
+                    <option value="manager1">Sophia Martinez - Manager</option>
+                    <option value="mentor1">John Doe - Mentor</option>
+                    <option value="mentee1">Emily Davis - Mentee</option>
+                </select>
+                <button onclick="selectUser()">Select</button>
+            </div>
+            <div id="relationSelection" class="container hidden">
+                <h2>Select from the list:</h2>
+                <select id="relatedUsers"></select>
+            </div>
+            <div id="orgChart" class="hidden"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="foot col-lg-12 col-md-12 col-sm-12 white">
+            <p>Footer content here...</p>
+        </div>
+    </div>
 
-        <h2>Mentors Available to Mentees</h2>
-        <ul id="mentorsList"></ul>
-    </main>
-    <footer>
-        <p>&copy; 2024 MentorMe</p>
-    </footer>
-    <script src="main.js"></script>
+    <script>
+        const users = {
+            manager1: { name: "Sophia Martinez", role: "Manager", children: ["mentor1", "mentor2", "mentor3"] },
+            mentor1: { name: "John Doe", role: "Mentor", children: ["mentee1", "mentee2"] },
+            mentor2: { name: "Jane Smith", role: "Mentor", children: ["mentee3"] },
+            mentor3: { name: "Mike Johnson", role: "Mentor", children: [] },
+            mentee1: { name: "Emily Davis", role: "Mentee", mentors: ["mentor1"] },
+            mentee2: { name: "Olivia Brown", role: "Mentee", mentors: ["mentor1"] },
+            mentee3: { name: "Liam Wilson", role: "Mentee", mentors: ["mentor2"] },
+        };
+
+        function selectUser() {
+            const userId = document.getElementById('userProfile').value;
+            const user = users[userId];
+            updateRelatedUsers(user);
+            generateOrgChart(userId);
+        }
+
+        function updateRelatedUsers(user) {
+            const relatedSelect = document.getElementById('relatedUsers');
+            relatedSelect.innerHTML = '';
+
+            let relatedUsers = [];
+            if (user.role === 'Mentor') {
+                relatedUsers = user.children.map(childId => users[childId]);
+            } else if (user.role === 'Mentee') {
+                relatedUsers = user.mentors.map(mentorId => users[mentorId]);
+            }
+
+            relatedUsers.forEach(relatedUser => {
+                const option = document.createElement('option');
+                option.value = relatedUser.name;
+                option.text = `${relatedUser.name} - ${relatedUser.role}`;
+                relatedSelect.appendChild(option);
+            });
+
+            if (relatedUsers.length > 0) {
+                document.getElementById('relationSelection').classList.remove('hidden');
+            }
+        }
+
+        function generateOrgChart(userId) {
+            const orgChartDiv = document.getElementById('orgChart');
+            orgChartDiv.innerHTML = '';
+            let user = users[userId];
+            const html = generateOrgChartHtml(user, users);
+            orgChartDiv.innerHTML = html;
+            orgChartDiv.classList.remove('hidden');
+        }
+
+        function generateOrgChartHtml(user, users) {
+            let html = `<li><a href="#">${user.name} - ${user.role}</a>`;
+            if (user.children && user.children.length > 0) {
+                html += '<ul>';
+                user.children.forEach(childId => {
+                    const child = users[childId];
+                    html += generateOrgChartHtml(child, users);
+                });
+                html += '</ul>';
+            }
+            html += '</li>';
+            return html;
+        }
+    </script>
 </body>
 </html>

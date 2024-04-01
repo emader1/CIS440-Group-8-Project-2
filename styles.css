@@ -1,64 +1,171 @@
-/* styles.css */
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+}
 
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+    background: linear-gradient(135deg, #B9E1DC, #D7B9E4);
+    padding: 2%;
 }
 
-.container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* For small screens (phones in portrait)  */
+@media only screen and (max-width: 500px) {
+    .col-sm-00  {display: none; } 
+    .col-sm-12 	{width: 100%; }
+    .menu p { display: inline; }
 }
 
-input[type="email"],
-input[type="password"],
-input[type="text"] {
-    display: block;
-    width: calc(100% - 20px); /* Adjusted width to match email and password textboxes */
-    margin-bottom: 10px;
-    padding: 10px;
-    box-sizing: border-box;
+/* For medium screens (e.g. landscape phones and portrait tablets) */
+@media only screen and (min-width: 501px) {
+    .col-md-00  {display: none; }
+    .col-md-01  {width: 8.33%; }
+    .col-md-02  {width: 16.66%; }
+    .col-md-03  {width: 25.00%; }
+    .col-md-04  {width: 33.33%; }
+    .col-md-05  {width: 41.66%; }
+    .col-md-06  {width: 50.00%; }
+    .col-md-07  {width: 58.33%; }
+    .col-md-08  {width: 66.66%; }
+    .col-md-09  {width: 75.00%; }
+    .col-md-10  {width: 83.33%; }
+    .col-md-11  {width: 91.66%; }
+    .col-md-12  {width: 100.00%; }
 }
 
-button {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
+/* For large screens or landscape tablets*/		
+@media only screen and (min-width: 1024px) {
+    .col-sm-00  {display: initial; }
+    .col-md-00  {display: initial; }
+    .col-lg-01  {width: 8.33%; }
+    .col-lg-02  {width: 16.66%; }
+    .col-lg-03  {width: 25.00%; }
+    .col-lg-04  {width: 33.33%; }
+    .col-lg-05  {width: 41.66%; }
+    .col-lg-06  {width: 50.00%; }
+    .col-lg-07  {width: 58.33%; }
+    .col-lg-08  {width: 66.66%; }
+    .col-lg-09  {width: 75.00%; }
+    .col-lg-10  {width: 83.33%; }
+    .col-lg-11  {width: 91.66%; }
+    .col-lg-12  {width: 100.00%; }
 }
 
-button:hover {
-    background-color: #0056b3;
+[class*="col-"] {
+    float: left;
+    padding: 2vh;
+	border: 0.5vh
 }
 
-/* Added CSS for Cancel Button */
-button#cancelCreateAccountBtn {
-    background-color: #dc3545; /* Red color */
+.row::after {
+    content: 	"";
+    clear: 		both;
+    display: 	block;
 }
 
-nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
+/* CSS for the login page. */
+    /* Container for the entire window. */
+    .content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-nav ul li {
-    display: inline;
-    margin-right: 20px;
-}
+    /* Container for the login information. */
+    .login {
+        display: flex;
+        justify-content: center;
 
-footer {
-    background-color: #343a40;
-    color: #fff;
-    padding: 10px 20px;
-    text-align: center;
-}
+        height: 60vh;
+        width: 40vw;
+
+        margin: 0.5vh;
+        padding: 1vh;
+
+        box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.1), 5px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .login h1 {
+        text-align: center;
+        font-size: 6vh;
+
+        padding: 1vh;
+    }
+
+    .login p {
+        font-size: 2vh;
+
+        margin: 0.5vh;
+    }
+
+    .login input {
+        font-size: 2vh;
+        height: 4vh;
+        width: 28vh;
+
+        margin: 0.5vh;
+        padding: 1vh;
+        border: 0.1vh solid black;
+    }
+
+    .login input:focus {
+        outline: none;
+    }
+
+    /* Container for the buttons. */
+    .button_container {
+        display: flex;
+        justify-content: center;
+
+        margin: 0.5vh;
+    }
+
+    .button_container button{
+        font-size: 2vh;
+
+        height: 6vh;
+        width: 12vh;
+
+        margin: 0.5vh;
+        padding: 0.5vh;
+        border: 0.1vh solid black;
+
+        box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Container for the selectors in the create account page. */
+    .selector_container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin: 0.5vh;
+    }
+
+    .selector_container select {
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 2vh;
+
+        height: 4vh;
+        width: 12vw;
+
+        margin: 0.5vh;
+        border: 0.1vh solid black;
+
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    .selector_container select option {
+        font-size: 2vh;
+    }
+
+    .selector_container select:focus {
+        outline: none;
+    }
+
+/* CSS for the home page. */
+    .white {
+        background-color: white;
+    }

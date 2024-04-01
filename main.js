@@ -1,49 +1,94 @@
-// main.js
+// Fetch matches based on user type and industry
+function fetchMatches(userType, industry) {
+    fetch(`http://127.0.0.1:5000/matches?user_type=${userType}&industry=${industry}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'  // Include credentials (cookies) in the request
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display the matches on the page
+        displayMatches(data.matches);
+    })
+    .catch(error => console.error('Error fetching matches:', error));
+}
 
-// Show create account form when "Create Account" button is clicked
+// Display matches on the page
+// Display matches on the page
+function displayMatches(matches) {
+    const menteesList = document.getElementById('menteesList');
+    const mentorsList = document.getElementById('mentorsList');
+
+    // Clear previous matches
+    menteesList.innerHTML = '';
+    mentorsList.innerHTML = '';
+
+    // Populate the lists based on match data
+    matches.forEach(match => {
+        const matchElement = document.createElement('li');
+        matchElement.textContent = `User: ${match.username}, Industry: ${match.industry}, User Type: ${match.user_type}`;
+
+        // Decide which list to append based on user type
+        if (match.user_type === 'Mentee') {
+            menteesList.appendChild(matchElement);
+        } else if (match.user_type === 'Mentor') {
+            mentorsList.appendChild(matchElement);
+        }
+    });
+}
+
+
+// Fetch matches for the logged-in user
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://127.0.0.1:5000/current-user', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'  // Include credentials (cookies) in the request
+    })
+    .then(response => response.json())
+    .then(user => {
+        const userType = user.user_type;
+        const industry = user.industry;
+        fetchMatches(userType, industry);
+    })
+    .catch(error => console.error('Error fetching current user:', error));
+});
+
+// Shows the create account form when "Create Account" button is clicked.
 document.getElementById('createAccountBtn').addEventListener('click', function() {
     document.getElementById('loginForm').style.display = 'none';
     document.getElementById('createAccountForm').style.display = 'block';
 });
 
-// Hide create account form and show login form when "Cancel" button is clicked
+// Hides the create account form and shows login form when "Cancel" button is clicked.
 document.getElementById('cancelCreateAccountBtn').addEventListener('click', function() {
     document.getElementById('createAccountForm').style.display = 'none';
     document.getElementById('loginForm').style.display = 'block';
 });
-// main.js (Update dashboard functionality)
 
-// Fetch and display available matches based on user's industry
-function fetchMatches(industry) {
-    fetch(`http://localhost:5000/matches?industry=${industry}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Handle response from backend
-            // Display available matches on the dashboard
-            // You can customize this based on your UI requirements
-            document.getElementById('menteesList').innerHTML = JSON.stringify(data.mentees);
-            document.getElementById('mentorsList').innerHTML = JSON.stringify(data.mentors);
-        })
-        .catch(error => console.error('Error:', error));
-}
+// Shows the school year selector when "mentee" is selected.
+document.getElementById('createUserType').addEventListener('change', function() {
+    var selectedValue = this.value;
+    var userTypeSelect = document.getElementById('createSchoolYear');
 
-// Example: Fetch matches when the dashboard page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Assuming you have the user's industry available in a variable
-    const userIndustry = 'YourUserIndustry'; // Replace 'YourUserIndustry' with actual industry
-    fetchMatches(userIndustry);
+    if (selectedValue === 'Mentee') {
+        userTypeSelect.style.display = 'block';
+    } else if (selectedValue === 'Mentor' || selectedValue === 'Manager') {
+        userTypeSelect.style.display = 'none';
+    }
 });
 
-
-// Placeholder for login functionality
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Send POST request to backend for login
-    fetch('http://localhost:5000/login', {
+    fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -55,18 +100,16 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data); // Handle response from backend
-        // Redirect to dashboard.html upon successful login
+        console.log(data);
         if (data.message === 'Login successful') {
             window.location.href = 'dashboard.html';
         } else {
-            alert('Invalid credentials. Please try again.'); // Display error message
+            alert('Invalid credentials. Please try again.');
         }
     })
     .catch(error => console.error('Error:', error));
 });
 
-// Placeholder for create account functionality
 document.getElementById('createAccountForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -77,8 +120,7 @@ document.getElementById('createAccountForm').addEventListener('submit', function
     const schoolYear = document.getElementById('createSchoolYear').value;
     const userType = document.getElementById('createUserType').value;
 
-    // Send POST request to backend for account creation
-    fetch('http://localhost:5000/create-account', {
+    fetch('http://127.0.0.1:5000/create-account', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -94,12 +136,12 @@ document.getElementById('createAccountForm').addEventListener('submit', function
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data); // Handle response from backend
+        console.log(data);
         if (data.message === 'Account created successfully') {
-            alert('Account created successfully. You can now login.'); // Display success message
-            window.location.href = 'index.html'; // Redirect to login page
+            alert('Account created successfully. You can now login.');
+            window.location.href = 'index.html';
         } else {
-            alert('Error creating account. Please try again.'); // Display error message
+            alert('Error creating account. Please try again.');
         }
     })
     .catch(error => console.error('Error:', error));
