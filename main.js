@@ -22,36 +22,12 @@ if (selectedValue === 'Mentee') {
 }
 });
 
-// Fetch and display available matches based on user's industry
-function fetchMatches(industry) {
-    fetch(`http://localhost:5000/matches?industry=${industry}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Handle response from backend
-            // Display available matches on the dashboard
-            // You can customize this based on your UI requirements
-            document.getElementById('menteesList').innerHTML = JSON.stringify(data.mentees);
-            document.getElementById('mentorsList').innerHTML = JSON.stringify(data.mentors);
-        })
-        .catch(error => console.error('Error:', error));
-}
-
-// Example: Fetch matches when the dashboard page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Assuming you have the user's industry available in a variable
-    const userIndustry = 'YourUserIndustry'; // Replace 'YourUserIndustry' with actual industry
-    fetchMatches(userIndustry);
-});
-
-
-// Placeholder for login functionality
 document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Send POST request to backend for login
     fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {
@@ -64,18 +40,16 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data); // Handle response from backend
-        // Redirect to dashboard.html upon successful login
+        console.log(data);
         if (data.message === 'Login successful') {
             window.location.href = 'dashboard.html';
         } else {
-            alert('Invalid credentials. Please try again.'); // Display error message
+            alert('Invalid credentials. Please try again.');
         }
     })
     .catch(error => console.error('Error:', error));
 });
 
-// Placeholder for create account functionality
 document.getElementById('createAccountForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -86,7 +60,6 @@ document.getElementById('createAccountForm').addEventListener('submit', function
     const schoolYear = document.getElementById('createSchoolYear').value;
     const userType = document.getElementById('createUserType').value;
 
-    // Send POST request to backend for account creation
     fetch('http://localhost:5000/create-account', {
         method: 'POST',
         headers: {
@@ -103,12 +76,12 @@ document.getElementById('createAccountForm').addEventListener('submit', function
     })
     .then(response => response.json())
     .then(data => {
-        console.log(data); // Handle response from backend
+        console.log(data);
         if (data.message === 'Account created successfully') {
-            alert('Account created successfully. You can now login.'); // Display success message
-            window.location.href = 'index.html'; // Redirect to login page
+            alert('Account created successfully. You can now login.');
+            window.location.href = 'index.html';
         } else {
-            alert('Error creating account. Please try again.'); // Display error message
+            alert('Error creating account. Please try again.');
         }
     })
     .catch(error => console.error('Error:', error));
