@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorMe - Org-chart</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="row">
+        <div class="head col-lg-12 col-md-12 col-sm-12 white">
+            <h1>MentorMe - Org-chart</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="menu col-lg-02 col-md-02 col-sm-12 white">
+            <li><a href="dashboard.html">Home</a></li>
+            <li><a href="matches.html">Org-chart</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </div>
+        <div class="main col-lg-10 col-md-10 col-sm-12 white">
+            <div id="userSelection" class="container">
+                <h2>Select your profile:</h2>
+                <select id="userProfile"></select>
+                <button onclick="selectUser()">Select</button>
+            </div>
+            <div id="relationSelection" class="container hidden">
+                <h2>Select from the list:</h2>
+                <select id="relatedUsers"></select>
+            </div>
+            <div id="orgChart" class="hidden"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="foot col-lg-12 col-md-12 col-sm-12 white">
+            <p>Footer content here...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://127.0.0.1:5000/fetch-users', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'  // Include credentials (cookies) in the request
+            })
+            .then(response => response.json())
+            .then(data => {
+                const users = data.users;
+                const userProfileSelect = document.getElementById('userProfile');
+
+                // Clear previous options
+                userProfileSelect.innerHTML = '';
+
+                // Populate the select options with fetched users
+                users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id;
+                    option.text = `${user.name} - ${user.role}`;
+                    userProfileSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error fetching users:', error));
+        });
+
+        function selectUser() {
+            const userId = document.getElementById('userProfile').value;
+            fetch(`http://127.0.0.1:5000/user-details?id=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'  // Include credentials (cookies) in the request
+            })
+            .then(response => response.json())
+            .then(user => {
+                updateRelatedUsers(user);
+                generateOrgChart(userId);
+            })
+            .catch(error => console.error('Error fetching user details:', error));
+        }
+
+        function updateRelatedUsers(user) {
+            const relatedSelect = document.getElementById('relatedUsers');
+            relatedSelect.innerHTML = '';
+
+            let relatedUsers = [];
+            if (user.role === 'Mentor') {
+                relatedUsers = user.children;
+            } else if (user.role === 'Mentee') {
+                relatedUsers = user.mentors;
+            }
+
+            relatedUsers.forEach(relatedUserId => {
+                const relatedUser = users.find(u => u.id === relatedUserId);
+                if (relatedUser) {
+                    const option = document.createElement('option');
+                    option.value = relatedUser.id;
+                    option.text = `${relatedUser.name} - ${relatedUser.role}`;
+                    relatedSelect.appendChild(option);
+                }
+            });
+
+            if (relatedUsers.length > 0) {
+                document.getElementById('relationSelection').classList.remove('hidden');
+            }
+        }
+
+        function generateOrgChart(userId) {
+            fetch(`http://127.0.0.1:5000/user-details?id=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'  // Include credentials (cookies) in the request
+            })
+            .then(response => response.json())
+            .then(user => {
+                const orgChartDiv = document.getElementById('orgChart');
+                orgChartDiv.innerHTML = '';
+
+                const html = generateOrgChartHtml(user, users);
+                orgChartDiv.innerHTML = html;
+                orgChartDiv.classList.remove('hidden');
+            })
+            .catch(error => console.error('Error fetching user details:', error));
+        }
+
+        function generateOrgChartHtml(user, users) {
+            let html = `<li><a href="#">${user.name} - ${user.role}</a>`;
+            if (user.children && user.children.length > 0) {
+                html += '<ul>';
+                user.children.forEach(childId => {
+                    const child = users.find(u => u.id === childId);
+                    if (child) {
+                        html += generateOrgChartHtml(child, users);
+                    }
+                });
+                html += '</ul>';
+            }
+            html += '</li>';
+            return html;
+        }
+    </script>
+</body>
+</html>
+
+
+
+//potential changes to fetch-matches in the backend
+
+@app.route('/fetch-users', methods=['GET'])
+def fetch_users():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    users = query_users(user_dict)
+
+    return jsonify({'users': users}), 200
+
+def query_users(user_dict):
+    user_type = user_dict['user_type']
+    cursor = db_connection.cursor()
+
+    try:
+        if user_type == 'Mentor':
+            sql = "SELECT * FROM users WHERE user_type = 'Mentee'"
+        elif user_type == 'Manager':
+            sql = "SELECT * FROM users WHERE user_type = 'Mentor'"
+        else:
+            return []  # Return an empty list for other user types
+
+        cursor.execute(sql)
+        users = cursor.fetchall()
+        return [{'id': user[0], 'name': user[1], 'role': user[2]} for user in users]
+    except Exception as e:
+        return []  # Return an empty list if there's an error fetching users
+    finally:
+        cursor.close()

@@ -1,3 +1,63 @@
+// Fetch matches based on user type and industry
+function fetchMatches(userType, industry) {
+    fetch(`http://127.0.0.1:5000/matches?user_type=${userType}&industry=${industry}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'  // Include credentials (cookies) in the request
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display the matches on the page
+        displayMatches(data.matches);
+    })
+    .catch(error => console.error('Error fetching matches:', error));
+}
+
+// Display matches on the page
+// Display matches on the page
+function displayMatches(matches) {
+    const menteesList = document.getElementById('menteesList');
+    const mentorsList = document.getElementById('mentorsList');
+
+    // Clear previous matches
+    menteesList.innerHTML = '';
+    mentorsList.innerHTML = '';
+
+    // Populate the lists based on match data
+    matches.forEach(match => {
+        const matchElement = document.createElement('li');
+        matchElement.textContent = `User: ${match.username}, Industry: ${match.industry}, User Type: ${match.user_type}`;
+
+        // Decide which list to append based on user type
+        if (match.user_type === 'Mentee') {
+            menteesList.appendChild(matchElement);
+        } else if (match.user_type === 'Mentor') {
+            mentorsList.appendChild(matchElement);
+        }
+    });
+}
+
+
+// Fetch matches for the logged-in user
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://127.0.0.1:5000/current-user', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'  // Include credentials (cookies) in the request
+    })
+    .then(response => response.json())
+    .then(user => {
+        const userType = user.user_type;
+        const industry = user.industry;
+        fetchMatches(userType, industry);
+    })
+    .catch(error => console.error('Error fetching current user:', error));
+});
+
 // Shows the create account form when "Create Account" button is clicked.
 document.getElementById('createAccountBtn').addEventListener('click', function() {
     document.getElementById('loginForm').style.display = 'none';
@@ -15,11 +75,11 @@ document.getElementById('createUserType').addEventListener('change', function() 
     var selectedValue = this.value;
     var userTypeSelect = document.getElementById('createSchoolYear');
 
-if (selectedValue === 'Mentee') {
-    userTypeSelect.style.display = 'block';
-} else if (selectedValue === 'Mentor' || selectedValue === 'Manager') {
-    userTypeSelect.style.display = 'none';
-}
+    if (selectedValue === 'Mentee') {
+        userTypeSelect.style.display = 'block';
+    } else if (selectedValue === 'Mentor' || selectedValue === 'Manager') {
+        userTypeSelect.style.display = 'none';
+    }
 });
 
 document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -28,7 +88,7 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    fetch('http://localhost:5000/login', {
+    fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -60,7 +120,7 @@ document.getElementById('createAccountForm').addEventListener('submit', function
     const schoolYear = document.getElementById('createSchoolYear').value;
     const userType = document.getElementById('createUserType').value;
 
-    fetch('http://localhost:5000/create-account', {
+    fetch('http://127.0.0.1:5000/create-account', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
