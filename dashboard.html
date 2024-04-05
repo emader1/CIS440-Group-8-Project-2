@@ -6,21 +6,46 @@
     <title>MentorMe - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {packages:["orgchart"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Manager');
+            data.addColumn('string', 'ToolTip');
+
+            // For each orgchart box, provide the name, manager, and tooltip to show.
+            data.addRows([
+                [{'v':'Jim', 'f':'Jim<div style="color:red; font-style:italic">Vice President</div>'},
+                'Mike', 'VP'],
+                ['Alice', 'Mike', ''],
+                ['Bob', 'Jim', 'Bob Sponge'],
+                ['Carol', 'Bob', '']
+            ]);
+
+            // Create the chart.
+            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+            // Draw the chart, setting the allowHtml option to true for the tooltips.
+            chart.draw(data, {'allowHtml':true});
+        }
+    </script>
 <body>
     <!-- Title -->
     <div class="row">
-        <div class="head col-lg-12 col-md-12 col-sm-12 white"><h1>MentorMe - Home</h1></div>
+        <div class="col-lg-11 col-md-11 col-sm-12 white">
+            <h1>MentorMe - Home</h1>
+        </div>
+        <div class="col-lg-01 col-md-01 col-sm-12 white">
+            <span>test</span>
+        </div>
     </div>
     <!-- Menu -->
     <div class="row">
-        <div class="menu col-lg-02 col-md-02 col-sm-12 white">
-            <li><a href="matches.html">Org-chart</a></li>
-            <li><a href="match.html">View Matches</a></li>
-            <li><a href="index.html">Logout</a></li>
-
-        </div>
         <!-- Body -->
-        <div class="main col-lg-10 col-md-10 col-sm-12 white">
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
             <h2>Welcome to MentorMe!</h2>
             <p>
                 <span>MentorMe is a platform designed to foster growth and learning by connecting mentors with mentees. Through our intuitive org-chart system, users can easily navigate and establish meaningful connections within their organization or field of interest.</span>
@@ -30,24 +55,27 @@
             </p>
         </div>
     </div>
-    <!-- Feature boxes -->
+    <!-- Features -->
     <div class="row">
-        <div class="pics col-lg-04 col-md-04 col-sm-12 white">
-            <h3>Find Your Mentor</h3>
-            <p>Connect with experienced professionals who can provide guidance, share knowledge, and offer valuable insights into your career path and personal development.</p>
+        <div class="chart_container col-lg-06 col-md-06 col-sm-12 white">
+            <div id="chart_div"></div>
         </div>
-        <div class="pics col-lg-04 col-md-04 col-sm-12 white">
-            <h3>Become a Mentor</h3>
-            <p>Share your expertise and experiences to help others grow in their careers. Being a mentor is a rewarding way to give back and develop your leadership skills.</p>
-        </div>
-        <div class="pics col-lg-04 col-md-04 col-sm-12 white">
-            <h3>Network and Grow</h3>
-            <p>MentorMe is not just a mentoring platform but also a community of professionals eager to expand their network and collaborate on new ideas and projects.</p>
+        <div class="chart_container col-lg-06 col-md-06 col-sm-12 white">
+            <div class="list_container">
+                <ul class="item_list">
+                    <li>Item 1</li>
+                    <li>Item 2</li>
+                    <li>Item 3</li>
+                    <li>Item 4</li>
+                    <li>Item 5</li>
+                    <li>Item 6</li>
+                </ul>
+            </div>
         </div>
     </div>
     <!-- Footer -->
     <div class="row">
-        <div class="foot col-lg-12 col-md-12 col-sm-12 white">
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
             <p>© 2024 MentorMe, Inc. All rights reserved. Join our platform today to embark on a journey of learning, sharing, and professional growth.</p>
         </div>
     </div>

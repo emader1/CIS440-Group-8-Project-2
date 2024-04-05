@@ -16,7 +16,6 @@ function fetchMatches(userType, industry) {
 }
 
 // Display matches on the page
-// Display matches on the page
 function displayMatches(matches) {
     const menteesList = document.getElementById('menteesList');
     const mentorsList = document.getElementById('mentorsList');
@@ -38,7 +37,6 @@ function displayMatches(matches) {
         }
     });
 }
-
 
 // Fetch matches for the logged-in user
 document.addEventListener('DOMContentLoaded', function() {
