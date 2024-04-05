@@ -144,3 +144,19 @@ document.getElementById('createAccountForm').addEventListener('submit', function
     })
     .catch(error => console.error('Error:', error));
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://127.0.0.1:5000/current-user', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'  // Include credentials (cookies) in the request
+    })
+    .then(response => response.json())
+    .then(user => {
+        document.getElementById('userName').textContent = user.email; // Assuming 'email' is a field in the user object
+        fetchMatches(user.user_type, user.industry);
+    })
+    .catch(error => console.error('Error fetching current user:', error));
+});

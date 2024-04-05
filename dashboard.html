@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-</head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {packages:["orgchart"]});
@@ -17,7 +16,6 @@
             data.addColumn('string', 'Manager');
             data.addColumn('string', 'ToolTip');
 
-            // For each orgchart box, provide the name, manager, and tooltip to show.
             data.addRows([
                 [{'v':'Jim', 'f':'Jim<div style="color:red; font-style:italic">Vice President</div>'},
                 'Mike', 'VP'],
@@ -26,32 +24,36 @@
                 ['Carol', 'Bob', '']
             ]);
 
-            // Create the chart.
             var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-            // Draw the chart, setting the allowHtml option to true for the tooltips.
             chart.draw(data, {'allowHtml':true});
         }
     </script>
+</head>
 <body>
-    <!-- Title -->
+    <!-- Title and Logout Button -->
     <div class="row">
         <div class="col-lg-11 col-md-11 col-sm-12 white">
             <h1>MentorMe - Home</h1>
         </div>
         <div class="col-lg-01 col-md-01 col-sm-12 white">
-            <span>test</span>
+            <button onclick="location.href='index.html'" id="logoutBtn">Logout</button>
         </div>
     </div>
-    <!-- Menu -->
+    <!-- Logged-in User Display -->
     <div class="row">
-        <!-- Body -->
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
+            <p id="loggedInUser">Logged in as: <span id="userName">[User Email]</span></p>
+        </div>
+    </div>
+    <!-- Body -->
+    <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 white">
             <h2>Welcome to MentorMe!</h2>
             <p>
-                <span>MentorMe is a platform designed to foster growth and learning by connecting mentors with mentees. Through our intuitive org-chart system, users can easily navigate and establish meaningful connections within their organization or field of interest.</span>
-                <span>Whether you're seeking guidance or looking to share your expertise, MentorMe provides the tools to facilitate these relationships, ensuring a rewarding experience for both mentors and mentees.</span>
-                <span>Our system is built on the principle of mutual development, where knowledge sharing and career development go hand in hand. MentorMe’s environment is conducive to personal and professional growth, making it the ideal place for continuous learning and networking.</span>
-                <span>Explore, connect, and grow with MentorMe, where your next mentoring relationship can lead to new insights, opportunities, and paths in your career journey.</span>
+                MentorMe is a platform designed to foster growth and learning by connecting mentors with mentees. Through our intuitive org-chart system, users can easily navigate and establish meaningful connections within their organization or field of interest.
+                Whether you're seeking guidance or looking to share your expertise, MentorMe provides the tools to facilitate these relationships, ensuring a rewarding experience for both mentors and mentees.
+                Our system is built on the principle of mutual development, where knowledge sharing and career development go hand in hand. MentorMe’s environment is conducive to personal and professional growth, making it the ideal place for continuous learning and networking.
+                Explore, connect, and grow with MentorMe, where your next mentoring relationship can lead to new insights, opportunities, and paths in your career journey.
             </p>
         </div>
     </div>
