@@ -1,14 +1,3 @@
-* {
-    margin: 0;
-    box-sizing: border-box;
-    font-family: monospace;
-}
-
-body {
-    background: linear-gradient(135deg, #B9E1DC, #D7B9E4);
-    padding: 2%;
-}
-
 /* For small screens (phones in portrait)  */
 @media only screen and (max-width: 500px) {
     .col-sm-00  {display: none; } 
@@ -53,8 +42,8 @@ body {
 
 [class*="col-"] {
     float: left;
-    padding: 2vh;
-	border: 0.5vh
+    padding: 2%;
+	border: 2%;
 }
 
 .row::after {
@@ -63,75 +52,108 @@ body {
     display: 	block;
 }
 
+.white {
+    background-color: white;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: linear-gradient(135deg, #B9E1DC, #D7B9E4);
+
+    height: 100vh;
+
+    padding: 2%;
+}
+
 /* CSS for the login page. */
+    .header {
+        border-radius: 2px;
+        box-shadow: 2px 2px 10px;
+
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+
     /* Container for the entire window. */
     .content {
+        border-radius: 2px;
+        box-shadow: 2px 2px 10px;
+
         display: flex;
         justify-content: center;
         align-items: center;
     }
 
-    /* Container for the login information. */
-    .login {
-        display: flex;
-        justify-content: center;
+    .content h2 {
+        word-wrap: break-word;
 
-        height: 60vh;
-        width: 40vw;
+        width: 100%;
+        max-width: 80vw;
 
-        margin: 0.5vh;
-        padding: 1vh;
-
-        box-shadow: -5px 0px 10px rgba(0, 0, 0, 0.1), 5px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 0.5%;
+        margin: 0.5%;
     }
 
-    .login h1 {
-        text-align: center;
-        font-size: 6vh;
-
-        padding: 1vh;
+    .content p {
+        max-width: 80vw;
     }
 
-    .login p {
-        font-size: 2vh;
-
-        margin: 0.5vh;
+    .login_container {
+        padding: 0.5%;
+        margin: 0.5%;
     }
 
-    .login input {
-        font-size: 2vh;
-        height: 4vh;
-        width: 16vw;
-
-        margin: 0.5vh;
-        padding: 1vh;
-        border: 0.1vh solid black;
-    }
-
-    .login input:focus {
-        outline: none;
+    .login_container input {
+        width: 100%;
+        max-width: 80vw;
     }
 
     /* Container for the buttons. */
     .button_container {
         display: flex;
+        flex-direction: column;
         justify-content: center;
-
-        margin: 0.5vh;
+        align-items: center;
+    
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+    
+    .button_container button {
+        text-align: center;
+        width: 100%;
+        max-width: 80vw;
+    
+        padding: 0.5%;
+        margin: 0.5%;
     }
 
-    .button_container button{
-        font-size: 2vh;
+    .button_container hr {
+        border: none;
+        border-radius: 5px;
+        background-color: black;
 
-        height: 6vh;
-        width: 6vw;
+        height: 1px;
+        width: 100%;
 
-        margin: 0.5vh;
-        padding: 0.5vh;
-        border: 0.1vh solid black;
-
-        box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+        margin: 2%;
     }
+
+    .button_container p {
+        text-align: center;
+        margin-bottom: 2%;
+    }
+    
 
     /* Container for the selectors in the create account page. */
     .selector_container {
@@ -139,22 +161,21 @@ body {
         justify-content: center;
         align-items: center;
 
-        margin: 0.5vh;
+        padding: 0.5%;
+        margin: 0.5%;
     }
 
     .selector_container select {
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        font-size: 2vh;
-
-        height: 4vh;
-        width: 8vw;
-
-        margin: 0.5vh;
-        border: 0.1vh solid black;
-
+        border-radius: 2px;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
+
+       width: 100%;
+       max-width: 80vw;
+
+        margin: 0.5vh;
+        border: 0.1vh solid black;
     }
     
     .selector_container select option {
@@ -163,49 +184,5 @@ body {
 
     .selector_container select:focus {
         outline: none;
-    }
-
-/* CSS for the home page. */
-    .white {
-        background-color: white;
-    }
-
-    .chart_container, .list_container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .list_container {
-        border-radius: 5px;
-        background-color: #ccc;
-
-        height: auto;
-        width: 20vw;
-    }
-
-    .item_list {
-        list-style: none;
-        padding-inline-start: 0;
-
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .item_list li {
-        background-color: #f2f2f2;
-        border-radius: 5px;
-        cursor: pointer;
-
-        height: auto;
-        width: 16vw;
-
-        margin: 0.5vh;
-        padding: 0.5vh;
-    }
-      
-      .item_list li:hover {
-        background-color: #e0e0e0;
     }
       

@@ -146,37 +146,3 @@
     </script>
 </body>
 </html>
-
-
-
-//potential changes to fetch-matches in the backend
-
-@app.route('/fetch-users', methods=['GET'])
-def fetch_users():
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
-
-    user_dict = session['user']
-    users = query_users(user_dict)
-
-    return jsonify({'users': users}), 200
-
-def query_users(user_dict):
-    user_type = user_dict['user_type']
-    cursor = db_connection.cursor()
-
-    try:
-        if user_type == 'Mentor':
-            sql = "SELECT * FROM users WHERE user_type = 'Mentee'"
-        elif user_type == 'Manager':
-            sql = "SELECT * FROM users WHERE user_type = 'Mentor'"
-        else:
-            return []  # Return an empty list for other user types
-
-        cursor.execute(sql)
-        users = cursor.fetchall()
-        return [{'id': user[0], 'name': user[1], 'role': user[2]} for user in users]
-    except Exception as e:
-        return []  # Return an empty list if there's an error fetching users
-    finally:
-        cursor.close()

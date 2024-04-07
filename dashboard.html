@@ -4,7 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- JS for the calendar. -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth'
+          });
+          calendar.render();
+        });
+      </script>
+    <!-- JS for the orgchart. -->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         google.charts.load('current', {packages:["orgchart"]});
@@ -36,43 +48,20 @@
             <h1>MentorMe - Home</h1>
         </div>
         <div class="col-lg-01 col-md-01 col-sm-12 white">
-            <button onclick="location.href='index.html'" id="logoutBtn">Logout</button>
+            <p>test</p>
         </div>
     </div>
-    <!-- Logged-in User Display -->
+    <!-- Calendar -->
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 white">
-            <p id="loggedInUser">Logged in as: <span id="userName">[User Email]</span></p>
-        </div>
-    </div>
-    <!-- Body -->
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 white">
-            <h2>Welcome to MentorMe!</h2>
-            <p>
-                MentorMe is a platform designed to foster growth and learning by connecting mentors with mentees. Through our intuitive org-chart system, users can easily navigate and establish meaningful connections within their organization or field of interest.
-                Whether you're seeking guidance or looking to share your expertise, MentorMe provides the tools to facilitate these relationships, ensuring a rewarding experience for both mentors and mentees.
-                Our system is built on the principle of mutual development, where knowledge sharing and career development go hand in hand. MentorMe’s environment is conducive to personal and professional growth, making it the ideal place for continuous learning and networking.
-                Explore, connect, and grow with MentorMe, where your next mentoring relationship can lead to new insights, opportunities, and paths in your career journey.
-            </p>
+            <h2>Welcome [username]</h2>
+            <div id='calendar'></div>
         </div>
     </div>
     <!-- Features -->
     <div class="row">
         <div class="chart_container col-lg-06 col-md-06 col-sm-12 white">
             <div id="chart_div"></div>
-        </div>
-        <div class="chart_container col-lg-06 col-md-06 col-sm-12 white">
-            <div class="list_container">
-                <ul class="item_list">
-                    <li>Item 1</li>
-                    <li>Item 2</li>
-                    <li>Item 3</li>
-                    <li>Item 4</li>
-                    <li>Item 5</li>
-                    <li>Item 6</li>
-                </ul>
-            </div>
         </div>
     </div>
     <!-- Footer -->
