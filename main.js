@@ -22,14 +22,16 @@ document.getElementById('createUserType').addEventListener('change', function() 
     }
 });
 
+
+// Fetch matches based on user type and industry.
 // Fetch matches based on user type and industry.
 function fetchMatches(userType, industry) {
-    fetch(`http://127.0.0.1:5000/matches?user_type=${userType}&industry=${industry}`, {
+    fetch(`http://127.0.0.1:5000/fetch-matches?user_type=${userType}&industry=${industry}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
-        credentials: 'include'
+        credentials: 'include' // Include credentials (e.g., cookies) in the request
     })
     .then(response => response.json())
     .then(data => {
@@ -38,12 +40,16 @@ function fetchMatches(userType, industry) {
     .catch(error => console.error('Error fetching matches:', error));
 }
 
+
+
 function displayMatches(matches) {
+    console.log('Matches:', matches); // Log matches to console for debugging
+
     const menteesList = document.getElementById('menteesList');
     const mentorsList = document.getElementById('mentorsList');
 
-    menteesList.innerHTML = '';
-    mentorsList.innerHTML = '';
+    menteesList.innerHTML = `<li>Debug: Mentees List</li>`; // Debug message
+    mentorsList.innerHTML = `<li>Debug: Mentors List</li>`; // Debug message
 
     matches.forEach(match => {
         const matchElement = document.createElement('li');
@@ -57,8 +63,9 @@ function displayMatches(matches) {
     });
 }
 
+
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('http://127.0.0.1:5000/current-user', {
+    fetch('http://127.0.0.1:5000/fetch-matches', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -140,7 +147,7 @@ document.getElementById('createAccountForm').addEventListener('submit', function
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('http://127.0.0.1:5000/current-user', {
+    fetch('http://127.0.0.1:5000/fetch-matches', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'

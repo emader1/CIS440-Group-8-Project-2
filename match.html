@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Matches</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="match.css">
+
 </head>
 <body>
     <header>
         <h1>Available Matches</h1>
         <nav>
             <ul>
-                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="dashboard.html">Home</a></li>
                 <li><a href="#">Logout</a></li> <!-- Add logout link -->
             </ul>
         </nav>
@@ -22,6 +23,7 @@
         <h2>Mentors Available to Mentees</h2>
         <ul id="mentorsList"></ul>
     </main>
+    
     <footer>
         <p>&copy; 2024 MentorMe</p>
     </footer>
@@ -31,7 +33,7 @@
     <script>
         // Fetch matches for the logged-in user
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://localhost:5000/current-user', {
+            fetch('http://127.0.0.1:5000/fetch-matches', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

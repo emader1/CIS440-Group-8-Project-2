@@ -10,6 +10,7 @@ secret_key_hex = secrets.token_hex(16)
 print(secret_key_hex)
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True, origins=['http://127.0.0.1:5000'])
 CORS(app)
 app.secret_key = secret_key_hex
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -33,6 +34,17 @@ def initialize_db_connection():
     global db_connection
     if db_connection is None:
         db_connection = create_db_connection()
+
+@app.route('/', methods=['OPTIONS'])
+def handle_options():
+    headers = {
+        'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+    }
+    return '', 204, headers
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -70,6 +82,7 @@ def login():
         cursor.close()
 
 # Function to fetch matches from the database based on user type and industry.
+# Function to fetch matches from the database based on user type and industry.
 @app.route('/fetch-matches', methods=['GET'])
 def fetch_matches():
     if 'user' not in session:
@@ -78,9 +91,8 @@ def fetch_matches():
     user_dict = session['user']
     matches = query_matches(user_dict)
 
-    print('Matches found:', matches)
-
     return jsonify({'matches': matches}), 200
+
 
 def query_matches(user_dict):
     user_type = user_dict['user_type']
