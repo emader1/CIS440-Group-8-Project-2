@@ -97,52 +97,23 @@ if (document.getElementById('createAccountForm')) {
     });
 }
 
-// Event listener for DOMContentLoaded to handle user session and fetch matches
 document.addEventListener('DOMContentLoaded', function() {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-        const user = JSON.parse(userStr);
-        if (document.getElementById('userName')) {
-            document.getElementById('userName').textContent = user.username;
-        }
-        fetchMatches(user.user_type, user.industry);
-    }
+    fetchUnmatchedUsers();
 });
 
-// Fetch and display matches
-function fetchMatches(userType, industry) {
-    fetch(`http://127.0.0.1:5000/fetch-matches?user_type=${userType}&industry=${industry}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'
+function fetchUnmatchedUsers() {
+    fetch('http://127.0.0.1:5000/api/available-matches', {
+        method: 'GET'
     })
     .then(response => response.json())
     .then(data => {
-        displayMatches(data.matches);
-    })
-    .catch(error => console.error('Error fetching matches:', error));
-}
-
-// Display matches in the UI
-function displayMatches(matches) {
-    const menteesList = document.getElementById('menteesList');
-    const mentorsList = document.getElementById('mentorsList');
-
-    if (menteesList && mentorsList) {
-        menteesList.innerHTML = '';
-        mentorsList.innerHTML = '';
-
-        matches.forEach(match => {
-            const matchElement = document.createElement('li');
-            matchElement.textContent = `User: ${match.username}, Industry: ${match.industry}, User Type: ${match.user_type}`;
-
-            if (match.user_type === 'Mentee') {
-                menteesList.appendChild(matchElement);
-            } else if (match.user_type === 'Mentor') {
-                mentorsList.appendChild(matchElement);
-            }
+        const userList = document.getElementById('unmatchedUsersList');
+        userList.innerHTML = ''; // Clear existing list
+        data.forEach(username => {
+            const listItem = document.createElement('li');
+            listItem.textContent = username;
+            userList.appendChild(listItem);
         });
-    }
+    })
+    .catch(error => console.error('Error:', error));
 }
