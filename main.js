@@ -1,4 +1,4 @@
-// Check and add event listener for 'Create Account' button
+// Check and add event listener for 'Create Account' button.
 if (document.getElementById('createAccountBtn')) {
     document.getElementById('createAccountBtn').addEventListener('click', function() {
         document.getElementById('loginForm').style.display = 'none';
@@ -6,7 +6,7 @@ if (document.getElementById('createAccountBtn')) {
     });
 }
 
-// Check and add event listener for 'Cancel' button in create account form
+// Check and add event listener for 'Cancel' button in create account form.
 if (document.getElementById('cancelCreateAccountBtn')) {
     document.getElementById('cancelCreateAccountBtn').addEventListener('click', function() {
         document.getElementById('createAccountForm').style.display = 'none';
@@ -14,7 +14,7 @@ if (document.getElementById('cancelCreateAccountBtn')) {
     });
 }
 
-// Check and add event listener for user type selection change
+// Check and add event listener for user type selection change.
 if (document.getElementById('createUserType')) {
     document.getElementById('createUserType').addEventListener('change', function() {
         var selectedValue = this.value;
@@ -27,7 +27,7 @@ if (document.getElementById('createUserType')) {
     });
 }
 
-// Check and add event listener for login form submission
+// Check and add event listener for login form submission.
 if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -58,7 +58,7 @@ if (document.getElementById('loginForm')) {
     });
 }
 
-// Check and add event listener for create account form submission
+// Check and add event listener for create account form submission.
 if (document.getElementById('createAccountForm')) {
     document.getElementById('createAccountForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -97,7 +97,14 @@ if (document.getElementById('createAccountForm')) {
     });
 }
 
-// Event listener for DOMContentLoaded to handle user session and fetch matches
+// Function for the menu.
+function toggleMenu() {
+    var menu = document.querySelector('.menu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+
+// Event listener for DOMContentLoaded to handle user session and fetch matches.
 document.addEventListener('DOMContentLoaded', function() {
     const userStr = localStorage.getItem('user');
     if (userStr) {
@@ -109,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Fetch and display matches
+// Fetch and display matches.
 function fetchMatches(userType, industry) {
     fetch(`http://127.0.0.1:5000/fetch-matches?user_type=${userType}&industry=${industry}`, {
         method: 'GET',
@@ -125,7 +132,7 @@ function fetchMatches(userType, industry) {
     .catch(error => console.error('Error fetching matches:', error));
 }
 
-// Display matches in the UI
+// Display matches in the UI.
 function displayMatches(matches) {
     const menteesList = document.getElementById('menteesList');
     const mentorsList = document.getElementById('mentorsList');

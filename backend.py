@@ -82,7 +82,6 @@ def login():
         cursor.close()
 
 # Function to fetch matches from the database based on user type and industry.
-# Function to fetch matches from the database based on user type and industry.
 @app.route('/fetch-matches', methods=['GET'])
 def fetch_matches():
     if 'user' not in session:
@@ -148,7 +147,6 @@ def create_account():
 def logout():
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
-
 
 if __name__ == '__main__':
     app.run(debug=True)
