@@ -45,7 +45,6 @@ def handle_options():
     }
     return '', 204, headers
 
-
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -92,7 +91,6 @@ def fetch_matches():
 
     return jsonify({'matches': matches}), 200
 
-
 def query_matches(user_dict):
     user_type = user_dict['user_type']
     industry = user_dict['industry']
@@ -116,7 +114,6 @@ def query_matches(user_dict):
         return []
     finally:
         cursor.close()
-
 
 @app.route('/create-account', methods=['POST'])
 def create_account():
@@ -142,11 +139,27 @@ def create_account():
     finally:
         cursor.close()
 
-# Logout endpoint.
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
+
+@app.route('/api/available-matches', methods=['GET'])
+def available_matches():
+    initialize_db_connection()
+    cursor = db_connection.cursor()
+
+    try:
+        sql = "SELECT username FROM users WHERE matched = 'no'"
+        cursor.execute(sql)
+        users = cursor.fetchall()
+
+        usernames = [user[0] for user in users]
+        return jsonify(usernames), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
+    finally:
+        cursor.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
