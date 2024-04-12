@@ -46,6 +46,10 @@
 	border: 2%;
 }
 
+.row {
+    display: flex;
+}
+
 .row::after {
     content: 	"";
     clear: 		both;
@@ -69,3 +73,34 @@ body {
 
     padding: 2%;
 }
+
+/* CSS for dashboard. */
+    .head {
+        padding-bottom: 0;
+    }
+
+    /* CSS for all menu items. */
+    .menu_container, .menu {
+        text-align: right;
+    }
+
+    .menu-icon {
+        cursor: pointer;
+    }
+
+    .menu {
+        display: none;
+    }
+
+    .menu ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Creates blank space to fill the page.. */
+    .fill {
+        padding-top: 0;
+        padding-bottom: 0;
+        flex: 1;
+    }
