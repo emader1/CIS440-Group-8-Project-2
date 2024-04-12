@@ -14,6 +14,37 @@
         initialView: 'dayGridMonth'
         });
         calendar.render();
+        fetchEventsFromDatabase();
+
+    // Adds events to calendar.
+    function fetchEventsFromDatabase() {
+        fetch('http://127.0.0.1:5000/fetch_data', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Network response error.');
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            Object.keys(data).forEach(function(eventName) {
+                var eventDate = new Date(data[eventName]).toISOString();
+                console.log('Adding event:', eventName, 'Date:', eventDate);
+                var event = {
+                    title: eventName,
+                    start: eventDate
+                };
+                calendar.addEvent(event);
+            });
+        })
+        .catch(function(error) {
+            console.error('Error fetching events:', error);
+        });
+    }
     });
     </script>
     <!-- JS for the orgchart. -->
@@ -43,32 +74,37 @@
 </head>
 <body>
     <div class="row">
-        <div class="head col-lg-11 col-md-11 col-sm-12 white">
-            <h1>MentorMe - Home</h1>
-            <h2>Welcome <span id="userName"></span></h2>
-        </div>
-        <div class="head col-lg-01 col-md-01 col-sm-00 white">
-            <div class="menu_container">
-                <div class="menu_icon" onclick="toggleMenu()">
+        <div class="header_container">
+            <div class="col-lg-11 col-md-11 col-sm-12 white">
+                <h1>MentorMe - Home</h1>
+                <h2>Welcome <span id="userName"></span></h2>
+            </div>
+            <div class="col-lg-01 col-md-01 col-sm-00 white">
+                <div class="menu_container">
                     <h2>&#9776;</h2>
+                    <div class="dropdown_menu">
+                        <span>Link 1</span>
+                        <span>Link 1</span>
+                        <span>Link 1</span>
+                      </div>
                 </div>
             </div>
         </div>
     </div>
+     <!-- Menu for mobile view. -->
+    <div class="row">
+        <div class="col-lg-00 col-md-00 col-sm-12 white">
+            <h3>mobile menu</h3>
+        </div>
+    </div>
     <!-- Calendar -->
     <div class="row">
-        <div class="fill col-lg-02 col-md-02 col-sm-00 white"></div>
-            <div class="col-lg-08 col-md-08 col-sm-12 white">
-                <div id='calendar'></div>
-            </div>
-        <div class="fill col-lg-02 col-md-02 col-sm-00 white">
-            <div class="menu">
-                <ul>
-                    <li><a href="match.html">View Matches</a></li>
-                    <li><a href="potentialchangestomatches.html">Changes to Match</a></li>
-                    <li><a href="login.html">Logout</a></li>
-                </ul>
-            </div>
+        <div class="calendar_container">
+            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
+                <div class="col-lg-08 col-md-08 col-sm-12 white">
+                    <div id='calendar'></div>
+                </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
         </div>
     </div>
     <!-- Features -->

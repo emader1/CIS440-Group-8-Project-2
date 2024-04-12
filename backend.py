@@ -7,11 +7,9 @@ import secrets
 secret_key = secrets.token_bytes(16)
 secret_key_hex = secrets.token_hex(16)
 
-print(secret_key_hex)
-
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=['http://127.0.0.1:5000'])
-CORS(app)
+CORS(app, origins='*', supports_credentials=True)
+
 app.secret_key = secret_key_hex
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_COOKIE_NAME'] = 'my_session_cookie'
@@ -27,32 +25,24 @@ def create_db_connection():
         database="spring2024Cteam8"
     )
 
-db_connection = None
-
-# Function to initialize db_connection if not already initialized.
-def initialize_db_connection():
-    global db_connection
-    if db_connection is None:
-        db_connection = create_db_connection()
-
-@app.route('/', methods=['OPTIONS'])
+# Function to handle OPTIONS requests.
 def handle_options():
-    headers = {
-        'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
+    return '', 204, {
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Allow-Credentials': 'true',
     }
-    return '', 204, headers
 
+# Route to login.
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data['email']
     password = data['password']
 
-    initialize_db_connection()
-    cursor = db_connection.cursor()
+    connection = create_db_connection()
+    cursor = connection.cursor()
 
     try:
         sql = "SELECT * FROM users WHERE email = %s AND password = %s"
@@ -70,6 +60,9 @@ def login():
                 'user_type': user[5]
             }
 
+            connection.close()
+            cursor.close()
+
             session['user'] = user_dict
 
             return jsonify({'message': 'Login successful', 'user': user_dict}), 200
@@ -77,10 +70,8 @@ def login():
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
         return jsonify({'message': f'Error: {str(e)}'}), 500
-    finally:
-        cursor.close()
 
-# Function to fetch matches from the database based on user type and industry.
+# Route to fetch matches from the database based on user type and industry.
 @app.route('/fetch-matches', methods=['GET'])
 def fetch_matches():
     if 'user' not in session:
@@ -95,7 +86,8 @@ def query_matches(user_dict):
     user_type = user_dict['user_type']
     industry = user_dict['industry']
 
-    cursor = db_connection.cursor()
+    connection = create_db_connection()
+    cursor = connection.cursor()
 
     try:
         if user_type == 'Mentee':
@@ -106,15 +98,20 @@ def query_matches(user_dict):
             sql = "SELECT * FROM users WHERE industry = %s"
         else:
             return []
+        
+        connection.close()
+        cursor.close()
 
         cursor.execute(sql, (industry,))
         matches = cursor.fetchall()
         return matches
+    
     except Exception as e:
         return []
     finally:
         cursor.close()
 
+# Route to create account.
 @app.route('/create-account', methods=['POST'])
 def create_account():
     data = request.get_json()
@@ -125,29 +122,33 @@ def create_account():
     school_year = data['school_year']
     user_type = data['user_type']
 
-    initialize_db_connection()
-    cursor = db_connection.cursor()
+    connection = create_db_connection()
+    cursor = connection.cursor()
 
     try:
         sql = "INSERT INTO users (email, username, password, industry, school_year, user_type) VALUES (%s, %s, %s, %s, %s, %s)"
         values = (email, username, password, industry, school_year, user_type)
         cursor.execute(sql, values)
-        db_connection.commit()
+        connection.commit()
+
+        connection.close()
+        cursor.close()
+
         return jsonify({'message': 'Account created successfully', 'email': email, 'username': username, 'user_type': user_type}), 200
     except Exception as e:
         return jsonify({'message': f'Error creating account: {str(e)}'}), 500
-    finally:
-        cursor.close()
 
+# Route to logout.
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
 
-@app.route('/api/available-matches', methods=['GET'])
+# Route to find available matches.
+@app.route('/available-matches', methods=['GET', 'OPTIONS'])
 def available_matches():
-    initialize_db_connection()
-    cursor = db_connection.cursor()
+    connection = create_db_connection()
+    cursor = connection.cursor()
 
     try:
         sql = "SELECT username FROM users WHERE matched = 'no'"
@@ -155,11 +156,36 @@ def available_matches():
         users = cursor.fetchall()
 
         usernames = [user[0] for user in users]
+
+        connection.close()
+        cursor.close()
+
         return jsonify(usernames), 200
     except Exception as e:
         return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
-    finally:
+
+# Route for populating calendar with data from SQL server.
+@app.route('/fetch_data', methods=['GET', 'OPTIONS'])
+def fetch_data():
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('SELECT task_description, due_date FROM mentee_tasks')
+        data = cursor.fetchall()
+
+        events = {}
+        for row in data:
+            event_name = row[0]
+            event_date = row[1]
+            events[event_name] = event_date
+
+        connection.close()
         cursor.close()
+
+        return jsonify(events)
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -76,9 +76,6 @@ body {
 
 /* CSS for the login page. */
     .header {
-        border-radius: 2px;
-        box-shadow: 2px 2px 10px;
-
         position: absolute;
         top: 0;
         left: 0;
@@ -87,7 +84,6 @@ body {
     /* Container for the entire window. */
     .content {
         border-radius: 2px;
-        box-shadow: 2px 2px 10px;
 
         display: flex;
         justify-content: center;
