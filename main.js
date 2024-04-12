@@ -23,6 +23,18 @@ document.getElementById('createUserType').addEventListener('change', function() 
 });
 
 // Function to check if the user is logged in
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');  // Add logging statement
+    // Check if user is logged in before fetching matches
+    if (isLoggedIn()) {
+        console.log('User is logged in');  // Add logging statement
+        fetchMatches();
+    } else {
+        console.log('User not logged in');
+        // Handle user not logged in case
+    }
+});
+
 function isLoggedIn() {
     return sessionStorage.getItem('user') !== null;
 }
@@ -124,19 +136,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Fetch matches based on user type and industry.
 // Fetch matches based on user type and industry.
-function fetchMatches(userType, industry) {
-    fetch(`http://127.0.0.1:5000/fetch-matches?user_type=${userType}&industry=${industry}`, {
+function fetchMatches() {
+    fetch('http://127.0.0.1:5000/fetch-matches', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         },
-        credentials: 'include' // Include credentials (e.g., cookies) in the request
+        credentials: 'include' // Include credentials for session
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Unauthorized or network error');
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log(data);
         displayMatches(data.matches);
     })
-    .catch(error => console.error('Error fetching matches:', error));
+    .catch(error => {
+        console.error('Error fetching matches:', error.message); // Log and display the error message
+        alert('Error fetching matches. Please try again.'); // Show an alert to the user
+    });
 }
 
 
