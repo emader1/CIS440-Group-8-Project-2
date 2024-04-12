@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorMe - Send Tasks</title>
+    <link rel="stylesheet" href="sendtasks.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Send Tasks</h1>
+        <!-- Old Send Tasks Form -->
+        <form id="sendTasksForm">
+            <label for="taskTitle">Task Title:</label>
+            <input type="text" id="taskTitle" name="taskTitle">
+            <label for="taskDescription">Task Description:</label>
+            <textarea id="taskDescription" name="taskDescription"></textarea>
+            <label for="menteeId">Assign to Mentee:</label>
+            <input type="text" id="menteeId" name="menteeId">
+            <label for="dueDate">Due Date:</label>
+            <input type="date" id="dueDate" name="dueDate">
+            <button type="submit">Send Task</button>
+        </form>
+        <div id="tasksContainer"></div>
+        <!-- Table to Display User's Tasks -->
+        <h2>Your Tasks</h2>
+        <table id="tasksTable">
+            <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Task Title</th>
+                    <th>Task Description</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tasksTableBody">
+                <!-- Tasks will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

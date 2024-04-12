@@ -3,21 +3,20 @@ from flask_session import Session
 import mysql.connector
 from flask_cors import CORS
 import secrets
-
-secret_key = secrets.token_bytes(16)
-secret_key_hex = secrets.token_hex(16)
-
-print(secret_key_hex)
-
+import logging
 app = Flask(__name__)
-CORS(app, supports_credentials=True, origins=['http://127.0.0.1:5000'])
-CORS(app)
+# Setup CORS and Session
+secret_key_hex = secrets.token_hex(16)
 app.secret_key = secret_key_hex
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_COOKIE_NAME'] = 'my_session_cookie'
-Session(app)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+# Example CORS configuration
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5500"], methods=['OPTIONS', 'POST', 'GET', 'PUT', 'DELETE'], allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
 
-# Function to create a new database connection.
+Session(app)
+logging.basicConfig(level=logging.INFO)
 def create_db_connection():
     return mysql.connector.connect(
         host="107.180.1.16",
@@ -35,45 +34,39 @@ def initialize_db_connection():
     if db_connection is None:
         db_connection = create_db_connection()
 
-@app.route('/', methods=['OPTIONS'])
+@app.route('/', methods=['OPTIONS', 'POST', 'GET', 'FETCH'])
 def handle_options():
-    headers = {
-        'Access-Control-Allow-Origin': 'http://127.0.0.1:5000',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Credentials': 'true',
-    }
-    return '', 204, headers
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'http://127.0.0.1:5500',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Allow-Credentials': 'true',
+        }
+        return '', 204, headers
+    else:
+        # Handle other methods as usual
+        pass
 
+from flask import session
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data['email']
     password = data['password']
-
     initialize_db_connection()
     cursor = db_connection.cursor()
-
     try:
         sql = "SELECT * FROM users WHERE email = %s AND password = %s"
-        values = (email, password)
-        cursor.execute(sql, values)
+        cursor.execute(sql, (email, password))
         user = cursor.fetchone()
-
         if user:
-            user_dict = {
-                'id': user[0],
-                'email': user[1],
-                'username': user[2],
-                'industry': user[3],
-                'school_year': user[4],
-                'user_type': user[5]
-            }
-
+            user_dict = {'id': user[0], 'email': user[1], 'username': user[2], 'industry': user[3], 'school_year': user[4], 'user_type': user[5]}
             session['user'] = user_dict
-
+            session.modified = True  # Force session to be saved
             return jsonify({'message': 'Login successful', 'user': user_dict}), 200
+            
         else:
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
@@ -81,10 +74,11 @@ def login():
     finally:
         cursor.close()
 
-# Function to fetch matches from the database based on user type and industry.
+
 # Function to fetch matches from the database based on user type and industry.
 @app.route('/fetch-matches', methods=['GET'])
 def fetch_matches():
+    print("Session:", session)  # Log the session information
     if 'user' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
@@ -92,7 +86,6 @@ def fetch_matches():
     matches = query_matches(user_dict)
 
     return jsonify({'matches': matches}), 200
-
 
 def query_matches(user_dict):
     user_type = user_dict['user_type']
@@ -118,7 +111,6 @@ def query_matches(user_dict):
     finally:
         cursor.close()
 
-
 @app.route('/create-account', methods=['POST'])
 def create_account():
     data = request.get_json()
@@ -142,6 +134,74 @@ def create_account():
         return jsonify({'message': f'Error creating account: {str(e)}'}), 500
     finally:
         cursor.close()
+@app.route('/send-tasks', methods=['POST'])
+def send_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] != 'Mentor':
+        return jsonify({'message': 'Only Mentors can send tasks'}), 403
+
+    data = request.get_json()
+    mentee_id = data['mentee_id']
+    task_title = data['task_title']
+    task_description = data['task_description']
+    due_date = data['due_date']
+
+    initialize_db_connection()
+    cursor = db_connection.cursor()
+
+    try:
+        sql = "INSERT INTO tasks (MenteeID, MentorID, TaskTitle, TaskDescription, DueDate) VALUES (%s, %s, %s, %s, %s)"
+        values = (mentee_id, user_dict['id'], task_title, task_description, due_date)
+        cursor.execute(sql, values)
+        db_connection.commit()
+        return jsonify({'message': 'Task sent successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error sending task: {str(e)}'}), 500
+    finally:
+        cursor.close()
+
+@app.route('/fetch-tasks', methods=['GET'])
+def fetch_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
+            cursor.execute(sql, (user_dict['id'],))
+            tasks = cursor.fetchall()
+            return jsonify({'tasks': tasks}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
+
+@app.route('/complete-task/<int:task_id>', methods=['PUT'])
+def complete_task(task_id):
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
+            cursor.execute(sql, (task_id, user_dict['id']))
+            db_connection.commit()
+            return jsonify({'message': 'Task completed successfully'}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
 
 # Logout endpoint.
 @app.route('/logout', methods=['GET'])
@@ -149,6 +209,5 @@ def logout():
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
 
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
