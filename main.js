@@ -28,13 +28,29 @@
         });
     }
 
-    // Check and add event listener for login form submission.
-    if (document.getElementById('loginForm')) {
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('http://127.0.0.1:5000/fetch-matches', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(user => {
+        const userType = user.user_type;
+        const industry = user.industry;
+        fetchMatches(userType, industry);
+    })
+    .catch(error => console.error('Error fetching current user:', error));
+});
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
             fetch('http://127.0.0.1:5000/login', {
                 method: 'POST',
@@ -100,26 +116,22 @@
 
 // Event listener for DOMContentLoaded to handle user session and fetch matches.
 document.addEventListener('DOMContentLoaded', function() {
-    fetchUnmatchedUsers();
-});
-
-function fetchUnmatchedUsers() {
-    fetch('http://127.0.0.1:5000/available-matches', {
+    fetch('http://127.0.0.1:5000/fetch-matches', {
         method: 'GET',
-        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
         const userList = document.getElementById('unmatchedUsersList');
-        userList.innerHTML = '';
+        userList.innerHTML = ''; // Clear existing list
         data.forEach(username => {
             const listItem = document.createElement('li');
             listItem.textContent = username;
             userList.appendChild(listItem);
         });
     })
-    .catch(error => console.error('Error:', error));
-}
+    .catch(error => console.error('Error fetching current user:', error));
+});

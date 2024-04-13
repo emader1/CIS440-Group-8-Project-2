@@ -2,9 +2,11 @@ from flask import Flask, request, jsonify, session
 from flask_session import Session
 import mysql.connector
 from flask_cors import CORS
+from flask import session
 import secrets
-
-secret_key = secrets.token_bytes(16)
+import logging
+app = Flask(__name__)
+# Setup CORS and Session
 secret_key_hex = secrets.token_hex(16)
 
 app = Flask(__name__)
@@ -13,9 +15,13 @@ CORS(app, origins='*', supports_credentials=True)
 app.secret_key = secret_key_hex
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_COOKIE_NAME'] = 'my_session_cookie'
-Session(app)
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+# Example CORS configuration
+CORS(app, supports_credentials=True, origins=["http://127.0.0.1:5500"], methods=['OPTIONS', 'POST', 'GET', 'PUT', 'DELETE'], allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
 
-# Function to create a new database connection.
+Session(app)
+logging.basicConfig(level=logging.INFO)
 def create_db_connection():
     return mysql.connector.connect(
         host="107.180.1.16",
@@ -46,10 +52,8 @@ def login():
 
     try:
         sql = "SELECT * FROM users WHERE email = %s AND password = %s"
-        values = (email, password)
-        cursor.execute(sql, values)
+        cursor.execute(sql, (email, password))
         user = cursor.fetchone()
-
         if user:
             user_dict = {
                 'id': user[0],
@@ -64,8 +68,9 @@ def login():
             cursor.close()
 
             session['user'] = user_dict
-
+            session.modified = True  # Force session to be saved
             return jsonify({'message': 'Login successful', 'user': user_dict}), 200
+            
         else:
             return jsonify({'message': 'Invalid credentials'}), 401
     except Exception as e:
@@ -74,6 +79,7 @@ def login():
 # Route to fetch matches from the database based on user type and industry.
 @app.route('/fetch-matches', methods=['GET'])
 def fetch_matches():
+    print("Session:", session)  # Log the session information
     if 'user' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
@@ -186,6 +192,183 @@ def fetch_data():
         return jsonify(events)
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+@app.route('/send-tasks', methods=['POST'])
+def send_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] != 'Mentor':
+        return jsonify({'message': 'Only Mentors can send tasks'}), 403
+
+    data = request.get_json()
+    mentee_id = data['mentee_id']
+    task_title = data['task_title']
+    task_description = data['task_description']
+    due_date = data['due_date']
+
+    co
+    cursor = db_connection.cursor()
+
+    try:
+        sql = "INSERT INTO tasks (MenteeID, MentorID, TaskTitle, TaskDescription, DueDate) VALUES (%s, %s, %s, %s, %s)"
+        values = (mentee_id, user_dict['id'], task_title, task_description, due_date)
+        cursor.execute(sql, values)
+        db_connection.commit()
+        return jsonify({'message': 'Task sent successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error sending task: {str(e)}'}), 500
+    finally:
+        cursor.close()
+@app.route('/send-tasks', methods=['POST'])
+def send_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] != 'Mentor':
+        return jsonify({'message': 'Only Mentors can send tasks'}), 403
+
+    data = request.get_json()
+    mentee_id = data['mentee_id']
+    task_title = data['task_title']
+    task_description = data['task_description']
+    due_date = data['due_date']
+
+    initialize_db_connection()
+    cursor = db_connection.cursor()
+
+    try:
+        sql = "INSERT INTO tasks (MenteeID, MentorID, TaskTitle, TaskDescription, DueDate) VALUES (%s, %s, %s, %s, %s)"
+        values = (mentee_id, user_dict['id'], task_title, task_description, due_date)
+        cursor.execute(sql, values)
+        db_connection.commit()
+        return jsonify({'message': 'Task sent successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error sending task: {str(e)}'}), 500
+    finally:
+        cursor.close()
+
+@app.route('/fetch-tasks', methods=['GET'])
+def fetch_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
+            cursor.execute(sql, (user_dict['id'],))
+            tasks = cursor.fetchall()
+            return jsonify({'tasks': tasks}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
+
+@app.route('/complete-task/<int:task_id>', methods=['PUT'])
+def complete_task(task_id):
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
+            cursor.execute(sql, (task_id, user_dict['id']))
+            db_connection.commit()
+            return jsonify({'message': 'Task completed successfully'}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
+
+@app.route('/fetch-tasks', methods=['GET'])
+def fetch_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
+            cursor.execute(sql, (user_dict['id'],))
+            tasks = cursor.fetchall()
+            return jsonify({'tasks': tasks}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
+
+@app.route('/complete-task/<int:task_id>', methods=['PUT'])
+def complete_task(task_id):
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
+            cursor.execute(sql, (task_id, user_dict['id']))
+            db_connection.commit()
+            return jsonify({'message': 'Task completed successfully'}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
+
+@app.route('/fetch-tasks', methods=['GET'])
+def fetch_tasks():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
+            cursor.execute(sql, (user_dict['id'],))
+            tasks = cursor.fetchall()
+            return jsonify({'tasks': tasks}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
+
+@app.route('/complete-task/<int:task_id>', methods=['PUT'])
+def complete_task(task_id):
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in'}), 401
+
+    user_dict = session['user']
+    if user_dict['user_type'] == 'Mentee':
+        cursor = db_connection.cursor()
+        try:
+            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
+            cursor.execute(sql, (task_id, user_dict['id']))
+            cursor.commit()
+            return jsonify({'message': 'Task completed successfully'}), 200
+        except Exception as e:
+            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
+        finally:
+            cursor.close()
+    else:
+        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
