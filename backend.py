@@ -195,6 +195,9 @@ def fetch_data():
     
 @app.route('/send-tasks', methods=['POST'])
 def send_tasks():
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
     if 'user' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
@@ -208,165 +211,65 @@ def send_tasks():
     task_description = data['task_description']
     due_date = data['due_date']
 
-    co
-    cursor = db_connection.cursor()
 
     try:
         sql = "INSERT INTO tasks (MenteeID, MentorID, TaskTitle, TaskDescription, DueDate) VALUES (%s, %s, %s, %s, %s)"
         values = (mentee_id, user_dict['id'], task_title, task_description, due_date)
         cursor.execute(sql, values)
-        db_connection.commit()
+        connection.commit()
+
+        connection.close()
+        cursor.close()
+
         return jsonify({'message': 'Task sent successfully'}), 200
     except Exception as e:
         return jsonify({'message': f'Error sending task: {str(e)}'}), 500
-    finally:
-        cursor.close()
-@app.route('/send-tasks', methods=['POST'])
-def send_tasks():
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
 
-    user_dict = session['user']
-    if user_dict['user_type'] != 'Mentor':
-        return jsonify({'message': 'Only Mentors can send tasks'}), 403
-
-    data = request.get_json()
-    mentee_id = data['mentee_id']
-    task_title = data['task_title']
-    task_description = data['task_description']
-    due_date = data['due_date']
-
-    initialize_db_connection()
-    cursor = db_connection.cursor()
-
-    try:
-        sql = "INSERT INTO tasks (MenteeID, MentorID, TaskTitle, TaskDescription, DueDate) VALUES (%s, %s, %s, %s, %s)"
-        values = (mentee_id, user_dict['id'], task_title, task_description, due_date)
-        cursor.execute(sql, values)
-        db_connection.commit()
-        return jsonify({'message': 'Task sent successfully'}), 200
-    except Exception as e:
-        return jsonify({'message': f'Error sending task: {str(e)}'}), 500
-    finally:
-        cursor.close()
 
 @app.route('/fetch-tasks', methods=['GET'])
 def fetch_tasks():
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
     if 'user' not in session:
         return jsonify({'message': 'User not logged in'}), 401
-
     user_dict = session['user']
     if user_dict['user_type'] == 'Mentee':
-        cursor = db_connection.cursor()
         try:
             sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
             cursor.execute(sql, (user_dict['id'],))
             tasks = cursor.fetchall()
+
+            connection.close()
+            cursor.close()
+
             return jsonify({'tasks': tasks}), 200
         except Exception as e:
             return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
-        finally:
-            cursor.close()
     else:
         return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
 
 @app.route('/complete-task/<int:task_id>', methods=['PUT'])
 def complete_task(task_id):
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
     if 'user' not in session:
         return jsonify({'message': 'User not logged in'}), 401
 
     user_dict = session['user']
     if user_dict['user_type'] == 'Mentee':
-        cursor = db_connection.cursor()
         try:
             sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
             cursor.execute(sql, (task_id, user_dict['id']))
-            db_connection.commit()
+            connection.commit()
+
+            connection.close()
+            cursor.close()
+            
             return jsonify({'message': 'Task completed successfully'}), 200
         except Exception as e:
             return jsonify({'message': f'Error completing task: {str(e)}'}), 500
-        finally:
-            cursor.close()
-    else:
-        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
-
-@app.route('/fetch-tasks', methods=['GET'])
-def fetch_tasks():
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
-
-    user_dict = session['user']
-    if user_dict['user_type'] == 'Mentee':
-        cursor = db_connection.cursor()
-        try:
-            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
-            cursor.execute(sql, (user_dict['id'],))
-            tasks = cursor.fetchall()
-            return jsonify({'tasks': tasks}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
-        finally:
-            cursor.close()
-    else:
-        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
-
-@app.route('/complete-task/<int:task_id>', methods=['PUT'])
-def complete_task(task_id):
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
-
-    user_dict = session['user']
-    if user_dict['user_type'] == 'Mentee':
-        cursor = db_connection.cursor()
-        try:
-            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
-            cursor.execute(sql, (task_id, user_dict['id']))
-            db_connection.commit()
-            return jsonify({'message': 'Task completed successfully'}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
-        finally:
-            cursor.close()
-    else:
-        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
-
-@app.route('/fetch-tasks', methods=['GET'])
-def fetch_tasks():
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
-
-    user_dict = session['user']
-    if user_dict['user_type'] == 'Mentee':
-        cursor = db_connection.cursor()
-        try:
-            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
-            cursor.execute(sql, (user_dict['id'],))
-            tasks = cursor.fetchall()
-            return jsonify({'tasks': tasks}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
-        finally:
-            cursor.close()
-    else:
-        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
-
-@app.route('/complete-task/<int:task_id>', methods=['PUT'])
-def complete_task(task_id):
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
-
-    user_dict = session['user']
-    if user_dict['user_type'] == 'Mentee':
-        cursor = db_connection.cursor()
-        try:
-            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
-            cursor.execute(sql, (task_id, user_dict['id']))
-            cursor.commit()
-            return jsonify({'message': 'Task completed successfully'}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
-        finally:
-            cursor.close()
     else:
         return jsonify({'message': 'Only Mentees can complete tasks'}), 403
 
