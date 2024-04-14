@@ -72,27 +72,55 @@ body {
 }
 
 /* CSS for dashboard. */
-    /* CSS for all menu items. */
-    .menu_container {
+    /* Displays header/content correctly. */
+    .header_container, .content_container {
+            display: flex;
+    }
+
+    /* CSS for desktop menu. */
+    .icon_container {
         text-align: center;
     }
 
-    .menu_container:hover, .dropdown_menu {
-        background-color: lightgray;
+    .icon_container i:hover {
+        cursor: pointer;
     }
 
-    /* CSS for the dropdown menu. */
-    .dropdown_menu {
-        display: none;
-        position: absolute;
+    /* CSS for mobile menu. */
+    .button_container {
+        display: flex;
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+    
+    .button_container button {
+        color: #fff;
+        background-color: #2c3e50;
+        border: 1px solid transparent;
+        border-color: #2c3e50;
+        border-radius: 0.25em;
+
+        text-align: center;
+        width: 100%;
+        max-width: 80vw;
+    
+        padding: 0.5%;
+        margin: 0.5%;
     }
 
-    .menu_container:hover .dropdown_menu {
+    .button_container button:hover {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    .button_container button:active {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+/* CSS for OrgChart page. */
+    .orgchart_container {
         display: flex;
         flex-direction: column;
-    }
-
-    /* Displays header/calendar correctly. */
-    .header_container, .calendar_container {
-            display: flex;
+        align-items: center;
     }

@@ -68,7 +68,7 @@ def login():
             return jsonify({'message': 'Login successful', 'user': user_dict}), 200
             
         else:
-            return jsonify({'message': 'Invalid credentials'}), 401
+            return jsonify({'message': 'Invalid credentials.'}), 401
     except Exception as e:
         return jsonify({'message': f'Error: {str(e)}'}), 500
 
@@ -105,7 +105,7 @@ def create_account():
 def logout():
     session.clear()
     session.modified = True
-    return jsonify({'message': 'Logged out successfully'}), 200
+    return jsonify({'message': 'Logged out successfully.'}), 200
 
 # Routes for the dashboard.
 # Route for populating calendar with data from SQL server.
@@ -165,7 +165,7 @@ def fetch_matches():
         except Exception as e:
             return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
     else:
-        return jsonify({'message': 'User not logged in'})
+        return jsonify({'message': 'User not logged in.'})
 
 # Route
 @app.route('/send_tasks', methods=['POST'])
@@ -174,11 +174,11 @@ def send_tasks():
     cursor = connection.cursor()
 
     if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+        return jsonify({'message': 'User not logged in.'}), 401
 
     user_dict = session['user']
     if user_dict['user_type'] != 'Mentor':
-        return jsonify({'message': 'Only Mentors can send tasks'}), 403
+        return jsonify({'message': 'Only Mentors can send tasks.'}), 403
 
     data = request.get_json()
     mentee_id = data['mentee_id']
@@ -195,7 +195,7 @@ def send_tasks():
         connection.close()
         cursor.close()
 
-        return jsonify({'message': 'Task sent successfully'}), 200
+        return jsonify({'message': 'Task sent successfully.'}), 200
     except Exception as e:
         return jsonify({'message': f'Error sending task: {str(e)}'}), 500
 
@@ -206,7 +206,7 @@ def fetch_tasks():
     cursor = connection.cursor()
 
     if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+        return jsonify({'message': 'User not logged in.'}), 401
     user_dict = session['user']
     if user_dict['user_type'] == 'Mentee':
         try:
@@ -221,7 +221,7 @@ def fetch_tasks():
         except Exception as e:
             return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
     else:
-        return jsonify({'message': 'Only Mentees can fetch tasks'}), 403
+        return jsonify({'message': 'Only Mentees can fetch tasks.'}), 403
 
 # Route
 @app.route('/complete_task/<int:task_id>', methods=['PUT'])
@@ -230,7 +230,7 @@ def complete_task(task_id):
     cursor = connection.cursor()
 
     if 'user' not in session:
-        return jsonify({'message': 'User not logged in'}), 401
+        return jsonify({'message': 'User not logged in.'}), 401
 
     user_dict = session['user']
     if user_dict['user_type'] == 'Mentee':
@@ -242,11 +242,11 @@ def complete_task(task_id):
             connection.close()
             cursor.close()
             
-            return jsonify({'message': 'Task completed successfully'}), 200
+            return jsonify({'message': 'Task completed successfully.'}), 200
         except Exception as e:
             return jsonify({'message': f'Error completing task: {str(e)}'}), 500
     else:
-        return jsonify({'message': 'Only Mentees can complete tasks'}), 403
+        return jsonify({'message': 'Only Mentees can complete tasks.'}), 403
     
 Session(app)
 

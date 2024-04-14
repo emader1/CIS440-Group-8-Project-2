@@ -96,11 +96,91 @@
             })
             .catch(error => console.error('Error:', error));
         });
-    }   
+    } 
 
-// JS for Home Page
-    // Shows all available matches to mentees.
-    
+// JS for home page.
+    // Used to open Home page.
+    if (document.getElementById('homeBtn')) {
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("homeBtn").addEventListener("click", function() {
+                window.location.href = 'dashboard.html';
+            });
+        });
+    }
+
+    if (document.getElementById('homeBtnMobile')) {
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("homeBtnMobile").addEventListener("click", function() {
+                window.location.href = 'dashboard.html';
+            });
+        });
+    }
+
+    // Used to open Orgchart page.
+    if (document.getElementById('orgchartBtn')) {
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("orgchartBtn").addEventListener("click", function() {
+                window.location.href = 'orgchart.html';
+            });
+        });
+    }
+
+    if (document.getElementById('orgchartBtnMobile')) {
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("orgchartBtnMobile").addEventListener("click", function() {
+                window.location.href = 'orgchart.html';
+            });
+        });
+    }
+
+    // Used to logout.
+    if (document.getElementById('logoutBtn')) {
+        document.getElementById("logoutBtn").addEventListener("click", function() {
+            fetch('http://127.0.0.1:5000/logout', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Logout failed');
+                }
+            })
+            .then(data => {
+                alert(data.message);
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+            });
+        });
+    }
+
+    if (document.getElementById('logoutBtnMobile')) {
+        document.getElementById("logoutBtnMobile").addEventListener("click", function() {
+            fetch('http://127.0.0.1:5000/logout', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Logout failed');
+                }
+            })
+            .then(data => {
+                alert(data.message);
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+            });
+        });
+    }
 
 // JS For Org-Chart.
     // Pulls users from DB.
@@ -169,23 +249,4 @@
         if (relatedUsers.length > 0) {
             document.getElementById('relationSelection').classList.remove('hidden');
         }
-    }
-
-    function generateOrgChart(userId) {
-        fetch(`http://127.0.0.1:5000/user_details?id=${userId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(user => {
-            const orgChartDiv = document.getElementById('orgChart');
-            orgChartDiv.innerHTML = '';
-
-            const html = generateOrgChartHtml(user, users);
-            orgChartDiv.innerHTML = html;
-            orgChartDiv.classList.remove('hidden');
-        })
-        .catch(error => console.error('Error fetching user details:', error));
     }

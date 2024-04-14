@@ -75,12 +75,6 @@ body {
 }
 
 /* CSS for the login page. */
-    .header {
-        position: absolute;
-        top: 0;
-        left: 0;
-    }
-
     /* Container for the entire window. */
     .content {
         border-radius: 2px;
@@ -90,7 +84,11 @@ body {
         align-items: center;
     }
 
-    .content h2 {
+    .content h1 {
+        text-align: center;
+    }
+
+    .content h1, .content h2 {
         word-wrap: break-word;
 
         width: 100%;

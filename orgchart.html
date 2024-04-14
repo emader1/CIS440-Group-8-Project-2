@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorMe - OrgChart</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Google fonts script. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- JS for the orgchart. -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {packages:["orgchart"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Manager');
+            data.addColumn('string', 'ToolTip');
+
+            data.addRows([
+                [{'v':'Mike', 'f':'Mike<div style="color:red; font-style:italic">Manager</div>'},
+                '', 'The Manager'],
+                [{'v':'Jim', 'f':'Jim<div style="color:red; font-style:italic">Mentor</div>'},
+                'Mike', 'A Mentor'],
+                ['Alice', 'Mike', ''],
+                ['Bob', 'Jim', 'Mentee'],
+                ['Bob', 'Alice', 'Mentee']
+            ]);
+
+            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+            chart.draw(data, {'allowHtml':true});
+        }
+    </script>
+</head>
+<body>
+    <div class="row">
+        <div class="header_container">
+            <div class="col-lg-10 col-md-10 col-sm-12 white">
+                <h1>MentorMe - OrgChart</h1>
+            </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white">
+                <div class="icon_container">
+                    <i class="material-icons" id="homeBtn">home</i>
+                    <i class="material-icons" id="orgchartBtn">bar_chart</i>
+                    <i class="material-icons" id="logoutBtn">logout</i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Menu for mobile view. -->
+    <div class="row">
+        <div class="col-lg-00 col-md-00 col-sm-12 white">
+            <div class="button_container">
+                <button id="homeBtnMobile">Home</button>
+                <button id="logoutBtnMobile">Logout</button>
+            </div>
+        </div>
+    </div>
+    <!-- Features -->
+    <div class="row">
+        <div class="content_container">
+            <div class="col-lg-06 col-md-06 col-sm-12 white">
+                <h2>Manager</h2>
+                <p>Managers are senior professionals who oversee a team of Mentors and Mentees. They are responsible for setting goals, assigning tasks, and providing guidance to both Mentors and Mentees.</p>
+                <br>
+
+                <h2>Mentor</h2>
+                <p>Mentors are experienced individuals who provides guidance, support, and knowledge to Mentees. Mentors share their expertise, offer advice, and help Mentees develop their skills and achieve their career goals.</p>
+                <br>
+
+                <h2>Mentee</h2>
+                <p>Mentees are less experienced professionals who seeks guidance and mentorship from more experienced individuals, such as Mentors. Mentees are eager to learn, grow, and advance their careers with the support and advice of their Mentor.</p>
+                <br>
+            </div>
+        <div class="orgchart_container col-lg-06 col-md-06 col-sm-12 white">
+            <div id="chart_div"></div>
+        </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
+            <p>© 2024 MentorMe, Inc.</p>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>

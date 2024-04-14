@@ -7,89 +7,82 @@
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-    <div>
-        <div class="header col-lg-12 col-md-12 col-sm-00 white">
-            <h1>MentorMe</h1>
-        </div>
-    </div>
-    <div class="col-lg-05 col-md-03 col-sm-00"></div>
-    <div class="content col-lg-02 col-md-06 col-sm-12 white">
-        <form id="loginForm">
-            <div class="row">
+    <div class="col-lg-04 col-md-03 col-sm-00"></div>
+        <div class="content col-lg-04 col-md-06 col-sm-12 white">
+            <form id="loginForm">
+                <h1>MentorMe</h1>
                 <h2>Login</h2>
-            </div>
-            <div class="login_container">
-                <!-- Email entry form. -->
-                <p>Email</p>
-                <input type="email" id="email" placeholder="e.g. jdoe@asu.edu" required autocomplete="on">
-                <!-- Password entry form. -->
-                <p>Password</p>
-                <input type="password" id="password" placeholder="e.g. abc123" required>
-            </div>
-            <!-- Login/New Account buttons. -->
-            <div class="button_container">
-                <button type="submit">Login</button>
-                <hr>
-                <p>or</p>
-                <button type="button" id="createAccountBtn">Create Account</button>
-            </div>
-        </form>
-
-        <form id="createAccountForm" style="display: none;" autocomplete="off">
-            <div class="row">
-                <h2>Create an Account</h2>
-            </div>
-            <div class="login_container">
-                <!-- Email entry form. -->
-                <p>Email</p>
-                <input type="email" id="createEmail" placeholder="e.g. jdoe@asu.edu" required>
-                <!-- Username entry form. -->
-                <p>Username</p>
-                <input type="text" id="createUsername" placeholder="e.g. jdoe123" required>
-                <!-- Password entry form. -->
-                <p>Password</p>
-                <input type="password" id="createPassword" placeholder="e.g. abc123" required>
-            </div>
-            <div class="row">
-                <div class="selector_container">
-                    <!-- Industry selector. -->
-                    <select name="Industry" id="createIndustry">
-                        <option value="">Industry</option>
-                        <option value="Tech">Tech</option>
-                        <option value="Finance">Finance</option>
-                    </select>
+                <div class="login_container">
+                    <!-- Email entry form. -->
+                    <p>Email</p>
+                    <input type="email" id="email" placeholder="e.g. jdoe@asu.edu" required autocomplete="on">
+                    <!-- Password entry form. -->
+                    <p>Password</p>
+                    <input type="password" id="password" placeholder="e.g. abc123" required>
                 </div>
-                <div class="selector_container">
-                    <!-- User type selector. -->
-                    <select id="createUserType">
-                        <option value="Role">Role</option>
-                        <option value="Mentee">Mentee</option>
-                        <option value="Mentor">Mentor</option>
-                        <option value="Manager">Manager</option>
-                    </select>
-                </div>
-                <div class="selector_container">
-                    <!-- School year selector. -->
-                    <select name="School Year" id="createSchoolYear" style="display: none;">
-                        <option value="">School Year</option>
-                        <option value="Freshman">Freshman</option>
-                        <option value="Sophomore">Sophomore</option>
-                        <option value="Junior">Junior</option>
-                        <option value="Senior">Senior</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-                <!-- Create account/cancel buttons. -->
+                <!-- Login/New Account buttons. -->
                 <div class="button_container">
-                    <button type="submit">Create Account</button>
+                    <button type="submit">Login</button>
                     <hr>
-                    <button type="submit" id="cancelCreateAccountBtn">Cancel</button></p>
+                    <p>or</p>
+                    <button type="button" id="createAccountBtn">Create Account</button>
                 </div>
-            </div>
-        </form>
-    </div>
-    <div class="col-lg-05 col-md-03 col-sm-00"></div>
+            </form>
+
+            <form id="createAccountForm" style="display: none;" autocomplete="off">
+                <h1>MentorMe</h1>
+                <h2>Create an Account</h2>
+                <div class="login_container">
+                    <!-- Email entry form. -->
+                    <p>Email</p>
+                    <input type="email" id="createEmail" placeholder="e.g. jdoe@asu.edu" required>
+                    <!-- Username entry form. -->
+                    <p>Username</p>
+                    <input type="text" id="createUsername" placeholder="e.g. jdoe123" required>
+                    <!-- Password entry form. -->
+                    <p>Password</p>
+                    <input type="password" id="createPassword" placeholder="e.g. abc123" required>
+                </div>
+                <div class="row">
+                    <div class="selector_container">
+                        <!-- Industry selector. -->
+                        <select name="Industry" id="createIndustry">
+                            <option value="">Industry</option>
+                            <option value="Tech">Tech</option>
+                            <option value="Finance">Finance</option>
+                        </select>
+                    </div>
+                    <div class="selector_container">
+                        <!-- User type selector. -->
+                        <select id="createUserType">
+                            <option value="Role">Role</option>
+                            <option value="Mentee">Mentee</option>
+                            <option value="Mentor">Mentor</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                    </div>
+                    <div class="selector_container">
+                        <!-- School year selector. -->
+                        <select name="School Year" id="createSchoolYear" style="display: none;">
+                            <option value="">School Year</option>
+                            <option value="Freshman">Freshman</option>
+                            <option value="Sophomore">Sophomore</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- Create account/cancel buttons. -->
+                    <div class="button_container">
+                        <button type="submit">Create Account</button>
+                        <hr>
+                        <button type="submit" id="cancelCreateAccountBtn">Cancel</button></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    <div class="col-lg-04 col-md-03 col-sm-00"></div>
     <script src="main.js"></script>
 </body>
 </html>

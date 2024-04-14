@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
+    <!-- Google fonts script. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <!-- JS for the calendar. -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
     <script>
@@ -48,64 +50,62 @@
     }
     });
     </script>
-    <!-- JS for the orgchart. -->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        google.charts.load('current', {packages:["orgchart"]});
-        google.charts.setOnLoadCallback(drawChart);
+    <!-- JS to show matches. -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchPotentialMatches()
+         });
 
-        function drawChart() {
-            var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Name');
-            data.addColumn('string', 'Manager');
-            data.addColumn('string', 'ToolTip');
-
-            data.addRows([
-                [{'v':'Jim', 'f':'Jim<div style="color:red; font-style:italic">Vice President</div>'},
-                'Mike', 'VP'],
-                ['Alice', 'Mike', ''],
-                ['Bob', 'Jim', 'Bob Sponge'],
-                ['Carol', 'Bob', '']
-            ]);
-
-            var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-            chart.draw(data, {'allowHtml':true});
-        }
+        function fetchPotentialMatches() {
+            fetch('http://127.0.0.1:5000/fetch_matches', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch available matches');
+                }
+                return response.json();
+            })
+            // Data is only being logged to console, will add css for this later.
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => console.error('Error fetching available matches:', error));
+        };
     </script>
 </head>
 <body>
-    <ul>
-        <li><a href="match.html">View Matches</a></li>
-        <li><a href="potentialchangestomatches.html">Changes to Match</a></li>
-        <li><a href="SendTasks.html">Send Tasks</a></li>
-    </ul>
     <div class="row">
         <div class="header_container">
-            <div class="col-lg-11 col-md-11 col-sm-12 white">
+            <div class="col-lg-10 col-md-10 col-sm-12 white">
                 <h1>MentorMe - Home</h1>
-                <h2>Welcome <span id="userName"></span></h2>
+                <h2>Welcome</h2>
             </div>
-            <div class="col-lg-01 col-md-01 col-sm-00 white">
-                <div class="menu_container">
-                    <h2>&#9776;</h2>
-                    <div class="dropdown_menu">
-                        <span>Link 1</span>
-                        <span>Link 1</span>
-                        <span>Link 1</span>
-                      </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white">
+                <div class="icon_container">
+                    <i class="material-icons" id="homeBtn">home</i>
+                    <i class="material-icons" id="orgchartBtn">bar_chart</i>
+                    <i class="material-icons" id="logoutBtn">logout</i>
                 </div>
             </div>
         </div>
     </div>
-     <!-- Menu for mobile view. -->
+    <!-- Menu for mobile view. -->
     <div class="row">
         <div class="col-lg-00 col-md-00 col-sm-12 white">
-            <h3>mobile menu</h3>
+            <div class="button_container">
+                <button id="orgchartBtnMobile">OrgChart</button>
+                <button id="logoutBtnMobile">Logout</button>
+            </div>
         </div>
     </div>
     <!-- Calendar -->
     <div class="row">
-        <div class="calendar_container">
+        <div class="content_container">
             <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
                 <div class="col-lg-08 col-md-08 col-sm-12 white">
                     <div id='calendar'></div>
@@ -115,16 +115,19 @@
     </div>
     <!-- Features -->
     <div class="row">
-        <div class="chart_container col-lg-06 col-md-06 col-sm-12 white">
-            <div id="chart_div"></div>
+        <div class="col-lg-06 col-md-06 col-sm-12 white">
+            <h2>Welcome to the Dashboard.</h2>
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Mollitia sapiente voluptate illum, cumque iste beatae deserunt iure ipsum nemo, optio blanditiis praesentium reiciendis aperiam, libero veniam eius cum assumenda quos?</p>
         </div>
-        <div class="chart_container col-lg-06 col-md-06 col-sm-12 white">
+        <div class="col-lg-06 col-md-06 col-sm-12 white">
+            <h2>View your matches.</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur earum atque ipsam non maxime autem ipsum, laboriosam, quod harum, quaerat magni dolorem? Ab amet doloremque vitae veritatis voluptate magnam.</p>
         </div>
     </div>
     <!-- Footer -->
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 white">
-            <p>© 2024 MentorMe, Inc. All rights reserved. Join our platform today to embark on a journey of learning, sharing, and professional growth.</p>
+            <p>© 2024 MentorMe, Inc.</p>
         </div>
     </div>
     <script src="main.js"></script>
