@@ -5,17 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
-    <!-- Google fonts script. -->
+    <!-- Google fonts script for material icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <!-- JS for the calendar. -->
+    <!-- FullCalendar CSS (for calendar styling) -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+</head>
+<body>
+    <div class="row">
+        <div class="header_container">
+            <div class="col-lg-10 col-md-10 col-sm-12 white">
+                <h1>MentorMe - Home</h1>
+                <h2 id="welcomeMessage">Welcome</h2>
+            </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white">
+                <div class="icon_container">
+                    <i class="material-icons" id="homeBtn">home</i>
+                    <i class="material-icons" id="orgchartBtn">bar_chart</i>
+                    <i class="material-icons" id="logoutBtn">logout</i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Menu for mobile view -->
+    <div class="row">
+        <div class="col-lg-00 col-md-00 col-sm-12 white">
+            <div class="button_container">
+                <button id="orgchartBtnMobile">OrgChart</button>
+                <button id="logoutBtnMobile">Logout</button>
+            </div>
+        </div>
+    </div>
+    <!-- Calendar -->
+    <div class="row">
+        <div class="content_container">
+            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
+            <div class="col-lg-08 col-md-08 col-sm-12 white">
+                <div id='calendar'></div>
+            </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
+        </div>
+    </div>
+    <!-- Available Matches Section -->
+    <div class="row">
+        <div class="col-lg-06 col-md-06 col-sm-12 white">
+            <h2>Available Matches</h2>
+            <ul id="unmatchedUsersList"></ul>
+        </div>
+        <div class="col-lg-06 col-md-06 col-sm-12 white">
+            <h2>View your matches</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur earum atque ipsam non maxime autem ipsum, laboriosam, quod harum, quaerat magni dolorem? Ab amet doloremque vitae veritatis voluptate magnam.</p>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
+            <p>© 2024 MentorMe, Inc.</p>
+        </div>
+    </div>
+    <script src="main.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth'
             });
-
             calendar.render();
             fetchEventsFromDatabase();
 
@@ -49,86 +103,6 @@
                 });
             }
         });
-
-        // Fetch available matches and display them
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchUnmatchedUsers();
-        });
-
-        function fetchUnmatchedUsers() {
-            fetch('http://127.0.0.1:5000/api/available-matches', {
-                method: 'GET'
-            })
-            .then(response => response.json())
-            .then(data => {
-                const userList = document.getElementById('unmatchedUsersList');
-                userList.innerHTML = '';
-                data.forEach(username => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = username;
-                    userList.appendChild(listItem);
-                });
-            })
-            .catch(error => console.error('Error fetching available matches:', error));
-        };
     </script>
-</head>
-<body>
-    <div class="row">
-        <div class="header_container">
-            <div class="col-lg-10 col-md-10 col-sm-12 white">
-                <h1>MentorMe - Home</h1>
-                <h2>Welcome</h2>
-            </div>
-            <div class="col-lg-02 col-md-02 col-sm-00 white">
-                <div class="icon_container">
-                    <i class="material-icons" id="homeBtn">home</i>
-                    <i class="material-icons" id="orgchartBtn">bar_chart</i>
-                    <i class="material-icons" id="logoutBtn">logout</i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Menu for mobile view -->
-    <div class="row">
-        <div class="col-lg-00 col-md-00 col-sm-12 white">
-            <div class="button_container">
-                <button id="orgchartBtnMobile">OrgChart</button>
-                <button id="logoutBtnMobile">Logout</button>
-            </div>
-        </div>
-    </div>
-    <!-- Calendar -->
-    <div class="row">
-        <div class="content_container">
-            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
-                <div class="col-lg-08 col-md-08 col-sm-12 white">
-                    <div id='calendar'></div>
-                </div>
-            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
-        </div>
-    </div>
-    <!-- Available Matches Section -->
-    <div class="row">
-        <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>Available Matches.</h2>
-            <ul id="unmatchedUsersList"></ul>
-        </div>
-        <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>View your matches.</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur earum atque ipsam non maxime autem ipsum, laboriosam, quod harum, quaerat magni dolorem? Ab amet doloremque vitae veritatis voluptate magnam.</p>
-        </div>
-    </div>
-    <!-- Features -->
-   
-        
-   
-    <!-- Footer -->
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 white">
-            <p>© 2024 MentorMe, Inc.</p>
-        </div>
-    </div>
-    <script src="main.js"></script>
 </body>
 </html>
