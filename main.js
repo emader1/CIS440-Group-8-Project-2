@@ -1,4 +1,3 @@
-// JS for login page.
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('createAccountBtn')) {
         document.getElementById('createAccountBtn').addEventListener('click', function() {
@@ -35,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch('http://127.0.0.1:5000/login', {
                 method: 'POST',
+                credentials: 'include', // Ensures cookies are sent with the request
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch('http://127.0.0.1:5000/create_account', {
                 method: 'POST',
+                credentials: 'include', // Ensures cookies are sent with the request
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -99,12 +100,13 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
     updateWelcomeMessage();
     fetchUnmatchedUsers();
+    fetchMatchedUsers();
 
     if (document.getElementById('logoutBtn')) {
         document.getElementById('logoutBtn').addEventListener('click', function() {
             fetch('http://127.0.0.1:5000/logout', {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include' // Ensures cookies are sent with the request
             })
             .then(response => {
                 if (response.ok) {
@@ -115,8 +117,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 alert(data.message);
-                window.location.href = 'login.html';
                 localStorage.clear();  // Clears the local storage
+                window.location.href = 'login.html';
             })
             .catch(error => {
                 console.error('Logout error:', error);
@@ -145,8 +147,52 @@ function fetchUnmatchedUsers() {
         data.forEach(username => {
             const listItem = document.createElement('li');
             listItem.textContent = username;
+            const matchButton = document.createElement('button');
+            matchButton.textContent = 'Match';
+            matchButton.onclick = function() { matchUser(username); };
+            listItem.appendChild(matchButton);
             userList.appendChild(listItem);
         });
     })
     .catch(error => console.error('Error fetching available matches:', error));
+}
+
+function matchUser(matchUsername) {
+    const userId = JSON.parse(localStorage.getItem('user')).id;
+    fetch('http://127.0.0.1:5000/update_match', {
+        method: 'POST',
+        credentials: 'include', // Ensures cookies are sent with the request
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            match_username: matchUsername
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        fetchUnmatchedUsers();  // Refresh the list of unmatched users
+        fetchMatchedUsers();   // Refresh the list of matched users
+    })
+    .catch(error => console.error('Error updating match:', error));
+}
+
+function fetchMatchedUsers() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    fetch(`http://127.0.0.1:5000/fetch_matches`, {
+        method: 'GET'
+    })
+    .then(response => response.json())
+    .then(data => {
+        const matchedList = document.getElementById('matchedUsersList');
+        matchedList.innerHTML = ''; // Clear previous matches
+        data.forEach(match => {
+            const listItem = document.createElement('li');
+            listItem.textContent = match;
+            matchedList.appendChild(listItem);
+        });
+    })
+    .catch(error => console.error('Error fetching matches:', error));
 }
