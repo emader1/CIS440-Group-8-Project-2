@@ -33,7 +33,6 @@ def handle_options():
     }
 
 # Routes for the login page.
-# Route to login.
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -48,7 +47,6 @@ def login():
         cursor.execute(sql, (email, password))
         user = cursor.fetchone()
         if user:
-            # Keeps track of all of the current user's data.
             user_dict = {
                 'id': user[0],
                 'email': user[1],
@@ -72,7 +70,6 @@ def login():
     except Exception as e:
         return jsonify({'message': f'Error: {str(e)}'}), 500
 
-# Route to create account.
 @app.route('/create_account', methods=['POST'])
 def create_account():
     data = request.get_json()
@@ -100,15 +97,30 @@ def create_account():
     except Exception as e:
         return jsonify({'message': f'Error creating account: {str(e)}'}), 500
 
-# Route to logout.
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     session.modified = True
     return jsonify({'message': 'Logged out successfully.'}), 200
 
-# Routes for the dashboard.
-# Route for populating calendar with data from SQL server.
+# Route to fetch available matches.
+@app.route('/api/available-matches', methods=['GET'])
+def available_matches():
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        sql = "SELECT username FROM users WHERE matched = 'no'"
+        cursor.execute(sql)
+        users = cursor.fetchall()
+
+        usernames = [user[0] for user in users]
+        connection.close()
+        cursor.close()
+        return jsonify(usernames), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
+
 @app.route('/fetch_data', methods=['GET'])
 def fetch_data():
     connection = create_db_connection()
@@ -131,10 +143,8 @@ def fetch_data():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-# Route to fetch matches.
 @app.route('/fetch_matches', methods=['GET'])
 def fetch_matches():
-    print(session)
     if 'user' in session:
         user_data = session['user']
         user_type = user_data['user_type']
@@ -151,12 +161,11 @@ def fetch_matches():
                 sql = "SELECT * FROM users WHERE industry = %s"
             else:
                 return []
-            
-            cursor.execute(sql)
-            users = cursor.fetchall()
-            print("Session variables in fetch_matches:", session)
 
-            usernames = [user[0] for user in users]
+            cursor.execute(sql, (user_data['industry'],))
+            users = cursor.fetchall()
+
+            usernames = [user[2] for user in users]  # Assuming the username is the third column in your users table
 
             connection.close()
             cursor.close()
@@ -167,87 +176,6 @@ def fetch_matches():
     else:
         return jsonify({'message': 'User not logged in.'})
 
-# Route
-@app.route('/send_tasks', methods=['POST'])
-def send_tasks():
-    connection = create_db_connection()
-    cursor = connection.cursor()
-
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in.'}), 401
-
-    user_dict = session['user']
-    if user_dict['user_type'] != 'Mentor':
-        return jsonify({'message': 'Only Mentors can send tasks.'}), 403
-
-    data = request.get_json()
-    mentee_id = data['mentee_id']
-    task_title = data['task_title']
-    task_description = data['task_description']
-    due_date = data['due_date']
-
-    try:
-        sql = "INSERT INTO tasks (MenteeID, MentorID, TaskTitle, TaskDescription, DueDate) VALUES (%s, %s, %s, %s, %s)"
-        values = (mentee_id, user_dict['id'], task_title, task_description, due_date)
-        cursor.execute(sql, values)
-        connection.commit()
-
-        connection.close()
-        cursor.close()
-
-        return jsonify({'message': 'Task sent successfully.'}), 200
-    except Exception as e:
-        return jsonify({'message': f'Error sending task: {str(e)}'}), 500
-
-# Route
-@app.route('/fetch_tasks', methods=['GET'])
-def fetch_tasks():
-    connection = create_db_connection()
-    cursor = connection.cursor()
-
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in.'}), 401
-    user_dict = session['user']
-    if user_dict['user_type'] == 'Mentee':
-        try:
-            sql = "SELECT * FROM tasks WHERE MenteeID = %s AND IsComplete = 0"
-            cursor.execute(sql, (user_dict['id'],))
-            tasks = cursor.fetchall()
-
-            connection.close()
-            cursor.close()
-
-            return jsonify({'tasks': tasks}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error fetching tasks: {str(e)}'}), 500
-    else:
-        return jsonify({'message': 'Only Mentees can fetch tasks.'}), 403
-
-# Route
-@app.route('/complete_task/<int:task_id>', methods=['PUT'])
-def complete_task(task_id):
-    connection = create_db_connection()
-    cursor = connection.cursor()
-
-    if 'user' not in session:
-        return jsonify({'message': 'User not logged in.'}), 401
-
-    user_dict = session['user']
-    if user_dict['user_type'] == 'Mentee':
-        try:
-            sql = "UPDATE tasks SET IsComplete = 1 WHERE TaskID = %s AND MenteeID = %s"
-            cursor.execute(sql, (task_id, user_dict['id']))
-            connection.commit()
-
-            connection.close()
-            cursor.close()
-            
-            return jsonify({'message': 'Task completed successfully.'}), 200
-        except Exception as e:
-            return jsonify({'message': f'Error completing task: {str(e)}'}), 500
-    else:
-        return jsonify({'message': 'Only Mentees can complete tasks.'}), 403
-    
 Session(app)
 
 if __name__ == '__main__':

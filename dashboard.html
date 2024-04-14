@@ -10,69 +10,64 @@
     <!-- JS for the calendar. -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth'
-        });
-
-        calendar.render();
-        fetchEventsFromDatabase();
-
-    // Adds events to calendar.
-    function fetchEventsFromDatabase() {
-        fetch('http://127.0.0.1:5000/fetch_data', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(function(response) {
-            if (!response.ok) {
-                throw new Error('Network response error.');
-            }
-            return response.json();
-        })
-        .then(function(data) {
-            Object.keys(data).forEach(function(eventName) {
-                var eventDate = new Date(data[eventName]).toISOString();
-                console.log('Adding event:', eventName, 'Date:', eventDate);
-                var event = {
-                    title: eventName,
-                    start: eventDate
-                };
-                calendar.addEvent(event);
-            });
-        })
-        .catch(function(error) {
-            console.error('Error fetching events:', error);
-        });
-    }
-    });
-    </script>
-    <!-- JS to show matches. -->
-    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            fetchPotentialMatches()
-         });
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth'
+            });
 
-        function fetchPotentialMatches() {
-            fetch('http://127.0.0.1:5000/fetch_matches', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
+            calendar.render();
+            fetchEventsFromDatabase();
+
+            // Adds events to calendar.
+            function fetchEventsFromDatabase() {
+                fetch('http://127.0.0.1:5000/fetch_data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response error.');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    Object.keys(data).forEach(function(eventName) {
+                        var eventDate = new Date(data[eventName]).toISOString();
+                        console.log('Adding event:', eventName, 'Date:', eventDate);
+                        var event = {
+                            title: eventName,
+                            start: eventDate
+                        };
+                        calendar.addEvent(event);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error fetching events:', error);
+                });
+            }
+        });
+
+        // Fetch available matches and display them
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUnmatchedUsers();
+        });
+
+        function fetchUnmatchedUsers() {
+            fetch('http://127.0.0.1:5000/api/available-matches', {
+                method: 'GET'
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch available matches');
-                }
-                return response.json();
-            })
-            // Data is only being logged to console, will add css for this later.
+            .then(response => response.json())
             .then(data => {
-                console.log(data)
+                const userList = document.getElementById('unmatchedUsersList');
+                userList.innerHTML = '';
+                data.forEach(username => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = username;
+                    userList.appendChild(listItem);
+                });
             })
             .catch(error => console.error('Error fetching available matches:', error));
         };
@@ -94,7 +89,7 @@
             </div>
         </div>
     </div>
-    <!-- Menu for mobile view. -->
+    <!-- Menu for mobile view -->
     <div class="row">
         <div class="col-lg-00 col-md-00 col-sm-12 white">
             <div class="button_container">
@@ -113,17 +108,21 @@
             <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
         </div>
     </div>
-    <!-- Features -->
+    <!-- Available Matches Section -->
     <div class="row">
         <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>Welcome to the Dashboard.</h2>
-            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Mollitia sapiente voluptate illum, cumque iste beatae deserunt iure ipsum nemo, optio blanditiis praesentium reiciendis aperiam, libero veniam eius cum assumenda quos?</p>
+            <h2>Available Matches.</h2>
+            <ul id="unmatchedUsersList"></ul>
         </div>
         <div class="col-lg-06 col-md-06 col-sm-12 white">
             <h2>View your matches.</h2>
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur earum atque ipsam non maxime autem ipsum, laboriosam, quod harum, quaerat magni dolorem? Ab amet doloremque vitae veritatis voluptate magnam.</p>
         </div>
     </div>
+    <!-- Features -->
+   
+        
+   
     <!-- Footer -->
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 white">
