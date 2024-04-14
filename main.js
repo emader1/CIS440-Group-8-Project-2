@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch('http://127.0.0.1:5000/login', {
                 method: 'POST',
-                credentials: 'include', // Ensures cookies are sent with the request
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             fetch('http://127.0.0.1:5000/create_account', {
                 method: 'POST',
-                credentials: 'include', // Ensures cookies are sent with the request
+                credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -97,16 +97,80 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // JS for the dashboard page.
-document.addEventListener('DOMContentLoaded', function() {
-    updateWelcomeMessage();
-    fetchUnmatchedUsers();
-    fetchMatchedUsers();
+    function updateWelcomeMessage() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.username) {
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            welcomeMessage.textContent = `Welcome, ${user.username}`;
+        }
+    }
+
+    function fetchUnmatchedUsers() {
+        fetch('http://127.0.0.1:5000/api/available-matches', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const userList = document.getElementById('unmatchedUsersList');
+            userList.innerHTML = '';
+            data.forEach(username => {
+                const listItem = document.createElement('li');
+                listItem.textContent = username;
+                const matchButton = document.createElement('button');
+                matchButton.textContent = 'Match';
+                matchButton.onclick = function() { matchUser(username); };
+                listItem.appendChild(matchButton);
+                userList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error fetching available matches:', error));
+    }
+    
+    function matchUser(matchUsername) {
+        const userId = JSON.parse(localStorage.getItem('user')).id;
+        fetch('http://127.0.0.1:5000/update_match', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                match_username: matchUsername
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            fetchUnmatchedUsers();
+            fetchMatchedUsers();
+        })
+        .catch(error => console.error('Error updating match:', error));
+    }
+    
+    function fetchMatchedUsers() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        fetch(`http://127.0.0.1:5000/fetch_matches`, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const matchedList = document.getElementById('matchedUsersList');
+            matchedList.innerHTML = '';
+            data.forEach(match => {
+                const listItem = document.createElement('li');
+                listItem.textContent = match;
+                matchedList.appendChild(listItem);
+            });
+        })
+        .catch(error => console.error('Error fetching matches:', error));
+    }
 
     if (document.getElementById('logoutBtn')) {
         document.getElementById('logoutBtn').addEventListener('click', function() {
             fetch('http://127.0.0.1:5000/logout', {
                 method: 'GET',
-                credentials: 'include' // Ensures cookies are sent with the request
+                credentials: 'include'
             })
             .then(response => {
                 if (response.ok) {
@@ -117,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 alert(data.message);
-                localStorage.clear();  // Clears the local storage
+                localStorage.clear();
                 window.location.href = 'login.html';
             })
             .catch(error => {
@@ -126,73 +190,3 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-});
-
-function updateWelcomeMessage() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.username) {
-        const welcomeMessage = document.getElementById('welcomeMessage');
-        welcomeMessage.textContent = `Welcome, ${user.username}`;
-    }
-}
-
-function fetchUnmatchedUsers() {
-    fetch('http://127.0.0.1:5000/api/available-matches', {
-        method: 'GET'
-    })
-    .then(response => response.json())
-    .then(data => {
-        const userList = document.getElementById('unmatchedUsersList');
-        userList.innerHTML = ''; // Clear existing list
-        data.forEach(username => {
-            const listItem = document.createElement('li');
-            listItem.textContent = username;
-            const matchButton = document.createElement('button');
-            matchButton.textContent = 'Match';
-            matchButton.onclick = function() { matchUser(username); };
-            listItem.appendChild(matchButton);
-            userList.appendChild(listItem);
-        });
-    })
-    .catch(error => console.error('Error fetching available matches:', error));
-}
-
-function matchUser(matchUsername) {
-    const userId = JSON.parse(localStorage.getItem('user')).id;
-    fetch('http://127.0.0.1:5000/update_match', {
-        method: 'POST',
-        credentials: 'include', // Ensures cookies are sent with the request
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            user_id: userId,
-            match_username: matchUsername
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        fetchUnmatchedUsers();  // Refresh the list of unmatched users
-        fetchMatchedUsers();   // Refresh the list of matched users
-    })
-    .catch(error => console.error('Error updating match:', error));
-}
-
-function fetchMatchedUsers() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    fetch(`http://127.0.0.1:5000/fetch_matches`, {
-        method: 'GET'
-    })
-    .then(response => response.json())
-    .then(data => {
-        const matchedList = document.getElementById('matchedUsersList');
-        matchedList.innerHTML = ''; // Clear previous matches
-        data.forEach(match => {
-            const listItem = document.createElement('li');
-            listItem.textContent = match;
-            matchedList.appendChild(listItem);
-        });
-    })
-    .catch(error => console.error('Error fetching matches:', error));
-}

@@ -7,9 +7,55 @@
     <link rel="stylesheet" href="dashboard.css">
     <!-- Google fonts script for material icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <!-- FullCalendar CSS (for calendar styling) -->
-    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+    <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth'
+            });
+            calendar.render();
+            fetchEventsFromDatabase();
+
+        // Event listeners for welcome messages.
+        document.addEventListener('DOMContentLoaded', function() {
+            updateWelcomeMessage();
+            fetchUnmatchedUsers();
+            fetchMatchedUsers();
+        });
+
+            // Adds events to calendar.
+            function fetchEventsFromDatabase() {
+                fetch('http://127.0.0.1:5000/fetch_data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response error.');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    Object.keys(data).forEach(function(eventName) {
+                        var eventDate = new Date(data[eventName]).toISOString();
+                        console.log('Adding event:', eventName, 'Date:', eventDate);
+                        var event = {
+                            title: eventName,
+                            start: eventDate
+                        };
+                        calendar.addEvent(event);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error fetching events:', error);
+                });
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="row">
@@ -64,45 +110,5 @@
         </div>
     </div>
     <script src="main.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth'
-            });
-            calendar.render();
-            fetchEventsFromDatabase();
-
-            // Adds events to calendar.
-            function fetchEventsFromDatabase() {
-                fetch('http://127.0.0.1:5000/fetch_data', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response error.');
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
-                    Object.keys(data).forEach(function(eventName) {
-                        var eventDate = new Date(data[eventName]).toISOString();
-                        console.log('Adding event:', eventName, 'Date:', eventDate);
-                        var event = {
-                            title: eventName,
-                            start: eventDate
-                        };
-                        calendar.addEvent(event);
-                    });
-                })
-                .catch(function(error) {
-                    console.error('Error fetching events:', error);
-                });
-            }
-        });
-    </script>
 </body>
 </html>
