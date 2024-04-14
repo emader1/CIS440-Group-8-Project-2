@@ -97,6 +97,88 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // JS for the dashboard page.
+    // Home page button.
+    if (document.getElementById('homeBtn')) {
+        document.getElementById('homeBtn').addEventListener('click', function() {
+            window.location.href = 'dashboard.html'
+        });
+    }
+
+    // Home page button mobile view.
+    if (document.getElementById('homeBtnMobile')) {
+        document.getElementById('homeBtnMobile').addEventListener('click', function() {
+            window.location.href = 'dashboard.html'
+        });
+    }
+
+    // OrgChart page button.
+    if (document.getElementById('orgchartBtn')) {
+        document.getElementById('orgchartBtn').addEventListener('click', function() {
+            window.location.href = 'orgchart.html'
+        });
+    }
+
+    // Orgchart page button mobile view.
+    if (document.getElementById('orgchartBtnMobile')) {
+        document.getElementById('orgchartBtnMobile').addEventListener('click', function() {
+            window.location.href = 'orgchart.html'
+        });
+    }
+
+    // Logout button.
+    if (document.getElementById('logoutBtn')) {
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            fetch('http://127.0.0.1:5000/logout', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Logout failed');
+                }
+            })
+            .then(data => {
+                alert(data.message);
+                localStorage.clear();
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+            });
+        });
+    }
+
+    // Logout button mobile view.
+    if (document.getElementById('logoutBtnMobile')) {
+        document.getElementById('logoutBtnMobile').addEventListener('click', function() {
+            fetch('http://127.0.0.1:5000/logout', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Logout failed');
+                }
+            })
+            .then(data => {
+                alert(data.message);
+                localStorage.clear();
+                window.location.href = 'login.html';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                alert('Logout failed. Please try again.');
+            });
+        });
+    }
+
+
+
     function updateWelcomeMessage() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.username) {
@@ -106,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function fetchUnmatchedUsers() {
-        fetch('http://127.0.0.1:5000/api/available-matches', {
+        fetch('http://127.0.0.1:5000/available_matches', {
             method: 'GET'
         })
         .then(response => response.json())
@@ -164,29 +246,4 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         })
         .catch(error => console.error('Error fetching matches:', error));
-    }
-
-    if (document.getElementById('logoutBtn')) {
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            fetch('http://127.0.0.1:5000/logout', {
-                method: 'GET',
-                credentials: 'include'
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Logout failed');
-                }
-            })
-            .then(data => {
-                alert(data.message);
-                localStorage.clear();
-                window.location.href = 'login.html';
-            })
-            .catch(error => {
-                console.error('Logout error:', error);
-                alert('Logout failed. Please try again.');
-            });
-        });
     }

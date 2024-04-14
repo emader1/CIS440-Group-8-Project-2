@@ -7,11 +7,6 @@ import secrets
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-secret_key_hex = secrets.token_hex(16)
-app.secret_key = secret_key_hex
-
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
 
 def create_db_connection():
@@ -32,6 +27,8 @@ def handle_options():
         'Access-Control-Allow-Credentials': 'true',
     }
 
+# Routes for the login page.
+# Route to login.
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -68,6 +65,7 @@ def login():
         cursor.close()
         connection.close()
 
+# Route to create an account.
 @app.route('/create_account', methods=['POST'])
 def create_account():
     data = request.get_json()
@@ -93,13 +91,38 @@ def create_account():
         cursor.close()
         connection.close()
 
+# Route to logout.
 @app.route('/logout', methods=['GET'])
 def logout():
     session.clear()
     session.modified = True
     return jsonify({'message': 'Logged out successfully.'}), 200
 
-@app.route('/api/available-matches', methods=['GET'])
+# Routes for dashboard.
+# Route for updating calendar.
+@app.route('/fetch_data', methods=['GET'])
+def fetch_data():
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute('SELECT task_description, due_date FROM mentee_tasks')
+        data = cursor.fetchall()
+        events = {}
+        for row in data:
+            event_name = row[0]
+            event_date = row[1]
+            events[event_name] = event_date
+
+        connection.close()
+        cursor.close()
+
+        return jsonify(events)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+# Route to show available matches.
+@app.route('/available_matches', methods=['GET'])
 def available_matches():
     connection = create_db_connection()
     cursor = connection.cursor()
@@ -117,6 +140,7 @@ def available_matches():
         cursor.close()
         connection.close()
 
+# Route to update matches.
 @app.route('/update_match', methods=['POST'])
 def update_match():
     if 'user' not in session:
@@ -145,6 +169,7 @@ def update_match():
         cursor.close()
         connection.close()
 
+# Route to fetch matches.
 @app.route('/fetch_matches', methods=['GET'])
 def fetch_matches():
     if 'user' not in session:

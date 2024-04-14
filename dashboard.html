@@ -18,42 +18,42 @@
             calendar.render();
             fetchEventsFromDatabase();
 
-        // Event listeners for welcome messages.
-        document.addEventListener('DOMContentLoaded', function() {
+        // Adds events to calendar.
+        function fetchEventsFromDatabase() {
+            fetch('http://127.0.0.1:5000/fetch_data', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Network response error.');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                Object.keys(data).forEach(function(eventName) {
+                    var eventDate = new Date(data[eventName]).toISOString();
+                    console.log('Adding event:', eventName, 'Date:', eventDate);
+                    var event = {
+                        title: eventName,
+                        start: eventDate
+                    };
+                    calendar.addEvent(event);
+                });
+            })
+            .catch(function(error) {
+                console.error('Error fetching events:', error);
+            });
+        }
+    });
+
+    // Event listeners for welcome messages.
+    document.addEventListener('DOMContentLoaded', function() {
             updateWelcomeMessage();
             fetchUnmatchedUsers();
             fetchMatchedUsers();
-        });
-
-            // Adds events to calendar.
-            function fetchEventsFromDatabase() {
-                fetch('http://127.0.0.1:5000/fetch_data', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response error.');
-                    }
-                    return response.json();
-                })
-                .then(function(data) {
-                    Object.keys(data).forEach(function(eventName) {
-                        var eventDate = new Date(data[eventName]).toISOString();
-                        console.log('Adding event:', eventName, 'Date:', eventDate);
-                        var event = {
-                            title: eventName,
-                            start: eventDate
-                        };
-                        calendar.addEvent(event);
-                    });
-                })
-                .catch(function(error) {
-                    console.error('Error fetching events:', error);
-                });
-            }
         });
     </script>
 </head>
@@ -95,12 +95,12 @@
     <!-- Available Matches Section -->
     <div class="row">
         <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>Available Matches</h2>
-            <ul id="unmatchedUsersList"></ul>
+            <h2>View your matches</h2>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur earum atque ipsam non maxime autem ipsum, laboriosam, quod harum, quaerat magni dolorem? Ab amet doloremque vitae veritatis voluptate magnam.</p>
         </div>
         <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>Your Matches</h2>
-            <ul id="matchedUsersList"></ul>
+            <h2>Available Matches</h2>
+            <ul id="unmatchedUsersList"></ul>
         </div>
     </div>
     <!-- Footer -->
