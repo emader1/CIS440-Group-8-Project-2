@@ -32,7 +32,6 @@ def handle_options():
         'Access-Control-Allow-Credentials': 'true',
     }
 
-# Routes for the login page.
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -58,17 +57,16 @@ def login():
                 'match_username': user[9]
             }
 
-            connection.close()
-            cursor.close()
-
             session['user'] = user_dict
             session.modified = True
             return jsonify({'message': 'Login successful', 'user': user_dict}), 200
-            
         else:
             return jsonify({'message': 'Invalid credentials.'}), 401
     except Exception as e:
         return jsonify({'message': f'Error: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.route('/create_account', methods=['POST'])
 def create_account():
@@ -88,14 +86,12 @@ def create_account():
         values = (email, username, password, industry, school_year, user_type)
         cursor.execute(sql, values)
         connection.commit()
-
-        connection.close()
-        cursor.close()
-        session.modified = True
-
         return jsonify({'message': 'Account created successfully', 'email': email, 'username': username, 'user_type': user_type}), 200
     except Exception as e:
         return jsonify({'message': f'Error creating account: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -103,7 +99,6 @@ def logout():
     session.modified = True
     return jsonify({'message': 'Logged out successfully.'}), 200
 
-# Route to fetch available matches.
 @app.route('/api/available-matches', methods=['GET'])
 def available_matches():
     connection = create_db_connection()
@@ -115,66 +110,62 @@ def available_matches():
         users = cursor.fetchall()
 
         usernames = [user[0] for user in users]
-        connection.close()
-        cursor.close()
         return jsonify(usernames), 200
     except Exception as e:
         return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
-@app.route('/fetch_data', methods=['GET'])
-def fetch_data():
+@app.route('/update_match', methods=['POST'])
+def update_match():
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in.'}), 401
+
+    data = request.get_json()
+    user_id = session['user']['id']
+    match_username = data['match_username']
+
     connection = create_db_connection()
     cursor = connection.cursor()
 
     try:
-        cursor.execute('SELECT task_description, due_date FROM mentee_tasks')
-        data = cursor.fetchall()
+        update_sql = "UPDATE users SET matched = 'yes', match_username = %s WHERE id = %s"
+        cursor.execute(update_sql, (match_username, user_id))
 
-        events = {}
-        for row in data:
-            event_name = row[0]
-            event_date = row[1]
-            events[event_name] = event_date
+        cursor.execute("SELECT id FROM users WHERE username = %s", (match_username,))
+        match_user_id = cursor.fetchone()[0]
+        cursor.execute(update_sql, (session['user']['username'], match_user_id))
 
-        connection.close()
-        cursor.close()
-
-        return jsonify(events)
+        connection.commit()
+        return jsonify({'message': 'Match updated successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'message': f'Error updating match: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.route('/fetch_matches', methods=['GET'])
 def fetch_matches():
-    if 'user' in session:
-        user_data = session['user']
-        user_type = user_data['user_type']
-       
-        connection = create_db_connection()
-        cursor = connection.cursor()
+    if 'user' not in session:
+        return jsonify({'message': 'User not logged in.'}), 401
 
-        try:
-            if user_type == 'Mentee':
-                sql = "SELECT * FROM users WHERE user_type = 'Mentor' AND industry = %s"
-            elif user_type == 'Mentor':
-                sql = "SELECT * FROM users WHERE user_type = 'Mentee' AND industry = %s"
-            elif user_type == 'Manager':
-                sql = "SELECT * FROM users WHERE industry = %s"
-            else:
-                return []
+    connection = create_db_connection()
+    cursor = connection.cursor()
 
-            cursor.execute(sql, (user_data['industry'],))
-            users = cursor.fetchall()
+    try:
+        user_id = session['user']['id']
+        sql = "SELECT match_username FROM users WHERE id = %s AND matched = 'yes'"
+        cursor.execute(sql, (user_id,))
+        matches = cursor.fetchall()
 
-            usernames = [user[2] for user in users]  # Assuming the username is the third column in your users table
-
-            connection.close()
-            cursor.close()
-
-            return jsonify(usernames), 200
-        except Exception as e:
-            return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
-    else:
-        return jsonify({'message': 'User not logged in.'})
+        matched_usernames = [match[0] for match in matches if match[0]]
+        return jsonify(matched_usernames), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching matches: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 Session(app)
 
