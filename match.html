@@ -5,7 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Matches</title>
     <link rel="stylesheet" href="match.css">
+    <script>
+         document.addEventListener('DOMContentLoaded', function() {
+            fetchPotentialMatches()
+         });
 
+        function fetchPotentialMatches() {
+            fetch('http://127.0.0.1:5000/fetch_matches', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch available matches');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => console.error('Error fetching available matches:', error));
+        };
+
+        
+    </script>
 </head>
 <body>
     <header>
@@ -28,26 +54,5 @@
         <p>&copy; 2024 MentorMe</p>
     </footer>
     <script src="main.js"></script>
-
-    <!-- Script to fetch matches -->
-    <script>
-        // Fetch matches for the logged-in user
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://127.0.0.1:5000/fetch-matches', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'  // Include credentials (cookies) in the request
-            })
-            .then(response => response.json())
-            .then(user => {
-                const userType = user.user_type;
-                const industry = user.industry;
-                fetchMatches(userType, industry); // Call fetchMatches function here
-            })
-            .catch(error => console.error('Error fetching current user:', error));
-        });
-    </script>
 </body>
 </html>

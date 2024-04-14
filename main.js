@@ -28,6 +28,8 @@
         });
     }
 
+    // Event listener for login form.
+    if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -55,64 +57,135 @@
                 })
                 .catch(error => console.error('Error:', error));
             });
+        }
     
-        // Check and add event listener for create account form submission.
-        if (document.getElementById('createAccountForm')) {
-            document.getElementById('createAccountForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-    
-                const email = document.getElementById('createEmail').value;
-                const username = document.getElementById('createUsername').value;
-                const password = document.getElementById('createPassword').value;
-                const industry = document.getElementById('createIndustry').value;
-                const schoolYear = document.getElementById('createSchoolYear').value;
-                const userType = document.getElementById('createUserType').value;
-    
-                fetch('http://127.0.0.1:5000/create-account', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        email: email,
-                        username: username,
-                        password: password,
-                        industry: industry,
-                        school_year: schoolYear,
-                        user_type: userType
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message === 'Account created successfully') {
-                        alert('Account created successfully. You can now login.');
-                        window.location.href = 'login.html';
-                    } else {
-                        alert('Error creating account. Please try again.');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        }    
+    // Check and add event listener for create account form submission.
+    if (document.getElementById('createAccountForm')) {
+        document.getElementById('createAccountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-// Event listener for DOMContentLoaded to handle user session and fetch matches.
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('http://127.0.0.1:5000/fetch-matches', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-        const userList = document.getElementById('unmatchedUsersList');
-        userList.innerHTML = ''; // Clear existing list
-        data.forEach(username => {
-            const listItem = document.createElement('li');
-            listItem.textContent = username;
-            userList.appendChild(listItem);
+            const email = document.getElementById('createEmail').value;
+            const username = document.getElementById('createUsername').value;
+            const password = document.getElementById('createPassword').value;
+            const industry = document.getElementById('createIndustry').value;
+            const schoolYear = document.getElementById('createSchoolYear').value;
+            const userType = document.getElementById('createUserType').value;
+
+            fetch('http://127.0.0.1:5000/create_account', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: email,
+                    username: username,
+                    password: password,
+                    industry: industry,
+                    school_year: schoolYear,
+                    user_type: userType
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Account created successfully') {
+                    alert('Account created successfully. You can now login.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Error creating account. Please try again.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
-    })
-    .catch(error => console.error('Error fetching current user:', error));
-});
+    }   
+
+// JS for Home Page
+    // Shows all available matches to mentees.
+    
+
+// JS For Org-Chart.
+    // Pulls users from DB.
+    // None of this JS is working. There is nothing on the backend to tell it what to do.
+    function getUsers() {
+        fetch('http://127.0.0.1:5000/fetch_users', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            const users = data.users;
+            const userProfileSelect = document.getElementById('userProfile');
+
+            userProfileSelect.innerHTML = '';
+
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.text = `${user.name} - ${user.role}`;
+                userProfileSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching users:', error));
+    };
+
+    function selectUser() {
+        const userId = document.getElementById('userProfile').value;
+        fetch(`http://127.0.0.1:5000/user_details?id=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(user => {
+            updateRelatedUsers(user);
+            generateOrgChart(userId);
+        })
+        .catch(error => console.error('Error fetching user details:', error));
+    }
+
+    function updateRelatedUsers(user) {
+        const relatedSelect = document.getElementById('relatedUsers');
+        relatedSelect.innerHTML = '';
+
+        let relatedUsers = [];
+        if (user.role === 'Mentor') {
+            relatedUsers = user.children;
+        } else if (user.role === 'Mentee') {
+            relatedUsers = user.mentors;
+        }
+
+        relatedUsers.forEach(relatedUserId => {
+            const relatedUser = users.find(u => u.id === relatedUserId);
+            if (relatedUser) {
+                const option = document.createElement('option');
+                option.value = relatedUser.id;
+                option.text = `${relatedUser.name} - ${relatedUser.role}`;
+                relatedSelect.appendChild(option);
+            }
+        });
+
+        if (relatedUsers.length > 0) {
+            document.getElementById('relationSelection').classList.remove('hidden');
+        }
+    }
+
+    function generateOrgChart(userId) {
+        fetch(`http://127.0.0.1:5000/user_details?id=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(user => {
+            const orgChartDiv = document.getElementById('orgChart');
+            orgChartDiv.innerHTML = '';
+
+            const html = generateOrgChartHtml(user, users);
+            orgChartDiv.innerHTML = html;
+            orgChartDiv.classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching user details:', error));
+    }
