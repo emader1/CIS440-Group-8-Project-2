@@ -118,6 +118,76 @@ body {
         border-color: #1a252f;
     }
 
+    /* CSS for potential matches menu. */
+    .user_container {
+        display: flex;
+        flex-direction: column;
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    .user_container button {
+        color: #fff;
+        background-color: #2c3e50;
+        border: 1px solid transparent;
+        border-color: #2c3e50;
+        border-radius: 0.25em;
+
+        text-align: center;
+        width: 100%;
+        max-width: 80vw;
+    
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    .user_container button:hover {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    .user_container button:active {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    #center h2 {
+        text-align: center;
+    }
+
+    #unmatchedUsersList {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        padding: 0;
+        margin: 0;
+    }
+
+    #unmatchedUsersList .user_container {
+        border: 1px solid;
+        border-color: #1a252f;
+        border-radius: 0.25em;
+
+        width: 10vw;
+
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    #unmatchedUsersList li {
+        text-align: center;
+        list-style: none;
+
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    #unmatchedUsersList button {
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
 /* CSS for OrgChart page. */
     .orgchart_container {
         display: flex;

@@ -196,17 +196,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const userList = document.getElementById('unmatchedUsersList');
             userList.innerHTML = '';
             data.forEach(username => {
+                // Places each user/button in a div.
+                const userContainer = document.createElement('div');
+                userContainer.classList.add('user_container');
+    
+                // List for usernames.
                 const listItem = document.createElement('li');
                 listItem.textContent = username;
+    
+                // Button for matching users.
                 const matchButton = document.createElement('button');
                 matchButton.textContent = 'Match';
                 matchButton.onclick = function() { matchUser(username); };
-                listItem.appendChild(matchButton);
-                userList.appendChild(listItem);
+    
+                userContainer.appendChild(listItem);
+                userContainer.appendChild(matchButton);
+    
+                userList.appendChild(userContainer);
             });
         })
         .catch(error => console.error('Error fetching available matches:', error));
     }
+    
     
     function matchUser(matchUsername) {
         const userId = JSON.parse(localStorage.getItem('user')).id;

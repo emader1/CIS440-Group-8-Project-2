@@ -13,41 +13,53 @@
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth'
+                initialView: 'dayGridMonth',
+                eventMouseEnter: function(info) {
+                    var tooltip = new Tooltip(info.el, {
+                        title: info.event.title,
+                        placement: 'top',
+                        trigger: 'hover',
+                        container: 'body'
+                    });
+                },
+                eventMouseLeave: function(info) {
+                    tooltip.dispose();
+                }
             });
+
             calendar.render();
             fetchEventsFromDatabase();
 
-        // Adds events to calendar.
-        function fetchEventsFromDatabase() {
-            fetch('http://127.0.0.1:5000/fetch_data', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('Network response error.');
-                }
-                return response.json();
-            })
-            .then(function(data) {
-                Object.keys(data).forEach(function(eventName) {
-                    var eventDate = new Date(data[eventName]).toISOString();
-                    console.log('Adding event:', eventName, 'Date:', eventDate);
-                    var event = {
-                        title: eventName,
-                        start: eventDate
-                    };
-                    calendar.addEvent(event);
+            // Adds events to calendar.
+            function fetchEventsFromDatabase() {
+                fetch('http://127.0.0.1:5000/fetch_data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response error.');
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    Object.keys(data).forEach(function(eventName) {
+                        var eventDate = new Date(data[eventName]).toISOString();
+                        console.log('Adding event:', eventName, 'Date:', eventDate);
+                        var event = {
+                            title: eventName,
+                            start: eventDate
+                        };
+                        calendar.addEvent(event);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error fetching events:', error);
                 });
-            })
-            .catch(function(error) {
-                console.error('Error fetching events:', error);
-            });
-        }
-    });
+            }
+        });
 
     // Event listeners for welcome messages.
     document.addEventListener('DOMContentLoaded', function() {
@@ -94,13 +106,24 @@
     </div>
     <!-- Available Matches Section -->
     <div class="row">
-        <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>View your matches</h2>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur consectetur earum atque ipsam non maxime autem ipsum, laboriosam, quod harum, quaerat magni dolorem? Ab amet doloremque vitae veritatis voluptate magnam.</p>
-        </div>
-        <div class="col-lg-06 col-md-06 col-sm-12 white">
-            <h2>Available Matches</h2>
-            <ul id="unmatchedUsersList"></ul>
+        <div class="content_container">
+            <div class="col-lg-04 col-md-04 col-sm-12 white">
+                <h2>About Us</h2>
+                <p>At Mentor Me, we understand the transformative power of mentorship. Whether you're a recent graduate embarking on your professional journey or an established professional seeking to share your wealth of knowledge, our platform provides the ideal space for meaningful exchanges and impactful mentorship relationships to flourish.</p>
+                <br>
+                <p>Through Mentor Me, mentees gain access to a diverse network of mentors who offer insights, advice, and support tailored to their unique aspirations and challenges. From career development and skill enhancement to industry-specific guidance and personal growth, our mentors are dedicated to fostering the success and fulfillment of their mentees every step of the way.</p>
+                <br>
+                <p>Our platform boasts a seamless matchmaking process, leveraging advanced algorithms and personalized preferences to connect mentees with mentors who possess the expertise and experience best suited to their needs. Whether you're seeking guidance on a specific project, navigating a career transition, or simply seeking inspiration and mentorship, Mentor Me is your trusted companion on your journey towards professional excellence.</p>
+            </div>
+            <div class="col-lg-04 col-md-04 col-sm-12 white">
+                <h2>View Your Matches</h2>
+                <p>At Mentor Me, our matching process is meticulously designed to foster meaningful connections between mentees and mentors within similar fields. Leveraging advanced algorithms and comprehensive profiling, we ensure that mentees are paired with mentors who possess the expertise and experience best aligned with their goals and aspirations. Once matched, mentors take an active role in guiding mentees through their professional journeys, assigning tasks, sharing valuable insights, and providing personalized guidance every step of the way. This collaborative approach not only facilitates skill development and knowledge acquisition but also cultivates a supportive and enriching mentorship dynamic where both mentees and mentors thrive. Through Mentor Me's innovative matching process, mentees and mentors forge lasting connections, embark on transformative learning experiences, and ultimately, achieve their full potential in their respective fields.</p>
+                <br>
+                <h3>Your Personalized Matches:</h3>
+            </div>
+            <div class="col-lg-04 col-md-04 col-sm-12 white">
+                <ul id="unmatchedUsersList"></ul>
+            </div>
         </div>
     </div>
     <!-- Footer -->
