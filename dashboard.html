@@ -64,6 +64,7 @@
     // Event listeners for welcome messages.
     document.addEventListener('DOMContentLoaded', function() {
             updateWelcomeMessage();
+            updateMatchMessage();
             fetchUnmatchedUsers();
             fetchMatchedUsers();
         });
@@ -116,12 +117,11 @@
                 <p>Our platform boasts a seamless matchmaking process, leveraging advanced algorithms and personalized preferences to connect mentees with mentors who possess the expertise and experience best suited to their needs. Whether you're seeking guidance on a specific project, navigating a career transition, or simply seeking inspiration and mentorship, Mentor Me is your trusted companion on your journey towards professional excellence.</p>
             </div>
             <div class="col-lg-04 col-md-04 col-sm-12 white">
-                <h2>View Your Matches</h2>
-                <p>At Mentor Me, our matching process is meticulously designed to foster meaningful connections between mentees and mentors within similar fields. Leveraging advanced algorithms and comprehensive profiling, we ensure that mentees are paired with mentors who possess the expertise and experience best aligned with their goals and aspirations. Once matched, mentors take an active role in guiding mentees through their professional journeys, assigning tasks, sharing valuable insights, and providing personalized guidance every step of the way. This collaborative approach not only facilitates skill development and knowledge acquisition but also cultivates a supportive and enriching mentorship dynamic where both mentees and mentors thrive. Through Mentor Me's innovative matching process, mentees and mentors forge lasting connections, embark on transformative learning experiences, and ultimately, achieve their full potential in their respective fields.</p>
-                <br>
-                <h3>Your Personalized Matches:</h3>
+                <h2>Your Match</h2>
+                <p id="matchUsername">Matched with: <span id="matchedUser"></span></p>
             </div>
             <div class="col-lg-04 col-md-04 col-sm-12 white">
+                <h2>Available Matches</h2>
                 <ul id="unmatchedUsersList"></ul>
             </div>
         </div>

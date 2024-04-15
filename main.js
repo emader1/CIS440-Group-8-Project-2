@@ -258,3 +258,15 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error fetching matches:', error));
     }
+
+    function updateMatchMessage() {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.match_username) { // Ensure the user and match_username are present
+            const matchUsernameElement = document.getElementById('matchedUser');
+            matchUsernameElement.textContent = user.match_username; // Update the text content with the match_username
+        } else {
+            // Optionally handle the case where there is no match
+            const matchUsernameElement = document.getElementById('matchedUser');
+            matchUsernameElement.textContent = 'No current match';
+        }
+    }
