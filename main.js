@@ -194,20 +194,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             const userList = document.getElementById('unmatchedUsersList');
-            userList.innerHTML = '';
-            data.forEach(username => {
-                // Places each user/button in a div.
+            userList.innerHTML = '';  // Clear existing entries
+            data.forEach(user => {
                 const userContainer = document.createElement('div');
                 userContainer.classList.add('user_container');
     
-                // List for usernames.
+                // Display username and industry
                 const listItem = document.createElement('li');
-                listItem.textContent = username;
+                listItem.textContent = `${user.username} (${user.industry})`;
     
-                // Button for matching users.
+                // Button for matching users
                 const matchButton = document.createElement('button');
                 matchButton.textContent = 'Match';
-                matchButton.onclick = function() { matchUser(username); };
+                matchButton.onclick = function() { matchUser(user.username); };
     
                 userContainer.appendChild(listItem);
                 userContainer.appendChild(matchButton);

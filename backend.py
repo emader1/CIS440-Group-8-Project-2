@@ -123,22 +123,27 @@ def fetch_data():
 
 # Route to show available matches.
 @app.route('/available_matches', methods=['GET'])
+# Route to show available matches.
+@app.route('/available_matches', methods=['GET'])
 def available_matches():
     connection = create_db_connection()
     cursor = connection.cursor()
 
     try:
-        sql = "SELECT username FROM users WHERE matched = 'no'"
+        # Include 'industry' in the SELECT statement
+        sql = "SELECT username, industry FROM users WHERE matched = 'no'"
         cursor.execute(sql)
         users = cursor.fetchall()
 
-        usernames = [user[0] for user in users]
-        return jsonify(usernames), 200
+        # Modify to send both username and industry
+        user_data = [{'username': user[0], 'industry': user[1]} for user in users]
+        return jsonify(user_data), 200
     except Exception as e:
         return jsonify({'message': f'Error fetching available matches: {str(e)}'}), 500
     finally:
         cursor.close()
         connection.close()
+
 
 # Route to update matches.
 @app.route('/update_match', methods=['POST'])
