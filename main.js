@@ -178,7 +178,84 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-
+    function fetchUsers() {
+        fetch('http://127.0.0.1:5000/fetch_users', {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const userListDiv = document.getElementById('userList');
+            userListDiv.innerHTML = '';  // Clear existing entries
+            data.forEach(user => {
+                const userContainer = document.createElement('div');
+                userContainer.classList.add('user_container');
+    
+                // Display user details
+                const userDetail = document.createElement('p');
+                userDetail.textContent = `Email: ${user.email}, Username: ${user.username}, User Type: ${user.user_type}`;
+    
+                // Button for deleting user
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = function() { deleteUser(user.id); };
+    
+                // Button for unmatching user
+                const unmatchButton = document.createElement('button');
+                unmatchButton.textContent = 'Unmatch';
+                unmatchButton.onclick = function() { unmatchUser(user.id); };
+    
+                userContainer.appendChild(userDetail);
+                userContainer.appendChild(deleteButton);
+                userContainer.appendChild(unmatchButton);
+    
+                userListDiv.appendChild(userContainer);
+            });
+        })
+        .catch(error => console.error('Error fetching users:', error));
+    }
+    function deleteUser(userId) {
+        fetch('http://127.0.0.1:5000/delete_user', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            fetchUsers();  // Refresh user list
+        })
+        .catch(error => console.error('Error deleting user:', error));
+    }
+    
+    // Function to unmatch user
+    function unmatchUser(userId) {
+        fetch('http://127.0.0.1:5000/unmatch_user', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: userId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            fetchUsers();  // Refresh user list
+        })
+        .catch(error => console.error('Error unmatching user:', error));
+    }
+    
+    // Call fetchUsers when the ManageUsers.html page is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchUsers();
+    });
     function updateWelcomeMessage() {
         const user = JSON.parse(localStorage.getItem('user'));
         if (user && user.username) {

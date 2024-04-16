@@ -17,6 +17,61 @@ def create_db_connection():
         password="spring2024Cteam8",
         database="spring2024Cteam8"
     )
+# Route to fetch all users
+@app.route('/fetch_users', methods=['GET'])
+def fetch_users():
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("SELECT id, email, username, user_type FROM users")
+        users = cursor.fetchall()
+
+        user_data = [{'id': user[0], 'email': user[1], 'username': user[2], 'user_type': user[3]} for user in users]
+        return jsonify(user_data), 200
+    except Exception as e:
+        return jsonify({'message': f'Error fetching users: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+# Route to delete user
+@app.route('/delete_user', methods=['POST'])
+def delete_user():
+    data = request.get_json()
+    user_id = data['user_id']
+
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        connection.commit()
+        return jsonify({'message': 'User deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error deleting user: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
+
+# Route to unmatch user
+@app.route('/unmatch_user', methods=['POST'])
+def unmatch_user():
+    data = request.get_json()
+    user_id = data['user_id']
+
+    connection = create_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("UPDATE users SET matched = 'no' WHERE id = %s", (user_id,))
+        connection.commit()
+        return jsonify({'message': 'User unmatched successfully'}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error unmatching user: {str(e)}'}), 500
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.route('/', methods=['OPTIONS'])
 def handle_options():

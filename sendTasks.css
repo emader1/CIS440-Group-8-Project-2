@@ -87,3 +87,156 @@ h2 {
 }
 
 /* Additional adjustments as needed */
+/* CSS for the columns with exceptions to account for the calendar's integrated CSS. */
+[class*="col-"]:not(.fc-col-header):not(.fc-col-header-cell) {
+    float: left;
+    padding: 2%;
+}
+
+.row::after {
+    content: 	"";
+    clear: 		both;
+    display: 	block;
+}
+
+.white {
+    background-color: white;
+}
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: monospace;
+}
+
+body {
+    background: linear-gradient(135deg, #B9E1DC, #D7B9E4);
+
+    height: 100vh;
+
+    padding: 2%;
+}
+
+/* CSS for dashboard. */
+    /* Displays header/content correctly. */
+    .header_container, .content_container {
+            display: flex;
+    }
+
+    /* CSS for desktop menu. */
+    .icon_container {
+        text-align: center;
+    }
+
+    .icon_container i:hover {
+        cursor: pointer;
+    }
+
+    /* CSS for mobile menu. */
+    .button_container {
+        display: flex;
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+    
+    .button_container button {
+        color: #fff;
+        background-color: #2c3e50;
+        border: 1px solid transparent;
+        border-color: #2c3e50;
+        border-radius: 0.25em;
+
+        text-align: center;
+        width: 100%;
+        max-width: 80vw;
+    
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    .button_container button:hover {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    .button_container button:active {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    /* CSS for potential matches menu. */
+    .user_container {
+        display: flex;
+        flex-direction: column;
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    .user_container button {
+        color: #fff;
+        background-color: #2c3e50;
+        border: 1px solid transparent;
+        border-color: #2c3e50;
+        border-radius: 0.25em;
+
+        text-align: center;
+        width: 100%;
+        max-width: 80vw;
+    
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    .user_container button:hover {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    .user_container button:active {
+        background-color: #1a252f;
+        border-color: #1a252f;
+    }
+
+    #center h2 {
+        text-align: center;
+    }
+
+    #unmatchedUsersList {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        padding: 0;
+        margin: 0;
+    }
+
+    #unmatchedUsersList .user_container {
+        border: 1px solid;
+        border-color: #1a252f;
+        border-radius: 0.25em;
+
+        width: 10vw;
+
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    #unmatchedUsersList li {
+        text-align: center;
+        list-style: none;
+
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+    #unmatchedUsersList button {
+        padding: 0.5%;
+        margin: 0.5%;
+    }
+
+/* CSS for OrgChart page. */
+    .orgchart_container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
