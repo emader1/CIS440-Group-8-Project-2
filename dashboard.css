@@ -194,3 +194,13 @@ body {
         flex-direction: column;
         align-items: center;
     }
+
+    #sendTasksForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #userList button {
+        width: 20%;
+    }

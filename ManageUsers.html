@@ -3,15 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users</title>
-    <link rel="stylesheet" href="ManageUsers.css">
+    <title>MentorMe - Manage Users</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Google fonts script for material icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
-    <h1>Manage Users</h1>
-    <div id="userList">
-        <!-- User list will be dynamically populated here -->
+    <div class="row">
+        <div class="header_container">
+            <div class="col-lg-10 col-md-10 col-sm-12 white">
+                <h1>MentorMe - Manage Users</h1>
+            </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white">
+                <div class="icon_container">
+                    <i class="material-icons" id="homeBtn">home</i>
+                    <i class="material-icons" id="orgchartBtn">bar_chart</i>
+                    <i class="material-icons" onclick="location.href='SendTasks.html';">assignment</i>
+                    <i class="material-icons" onclick="location.href='ManageUsers.html';"id>group</i>
+                    <i class="material-icons" id="logoutBtn">logout</i>
+                </div>
+            </div>
+        </div>
     </div>
-
+    <!-- Menu for mobile view -->
+    <div class="row">
+        <div class="col-lg-00 col-md-00 col-sm-12 white">
+            <div class="button_container">
+                <button id="orgchartBtnMobile">OrgChart</button>
+                <button id="logoutBtnMobile">Logout</button>
+                
+            </div>
+        </div>
+    </div>
+    <!-- Users -->
+    <div class="row">
+        <div class="content_container">
+            <div class="col-lg-04 col-md-04 col-sm-00 white"></div>
+            <div class="col-lg-04 col-md-04 col-sm-12 white">
+                <div id='userList'></div>
+            </div>
+            <div class="col-lg-04 col-md-04 col-sm-00 white"></div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
+            <p>© 2024 MentorMe, Inc.</p>
+        </div>
+    </div>
     <script src="main.js"></script>
 </body>
 </html>
+

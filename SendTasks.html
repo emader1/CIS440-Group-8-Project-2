@@ -1,50 +1,85 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorMe - Send Tasks</title>
-    <link rel="stylesheet" href="sendtasks.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <!-- Google fonts script for material icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
-    <div class="container">
-        <h1>Send Tasks</h1>
-        <!-- Old Send Tasks Form -->
-        <form id="sendTasksForm">
-            <label for="taskTitle">Task Title:</label>
-            <input type="text" id="taskTitle" name="taskTitle">
-            <label for="taskDescription">Task Description:</label>
-            <textarea id="taskDescription" name="taskDescription"></textarea>
-            <label for="menteeId">Assign to Mentee:</label>
-            <input type="text" id="menteeId" name="menteeId">
-            <label for="dueDate">Due Date:</label>
-            <input type="date" id="dueDate" name="dueDate">
-            <button type="submit">Send Task</button>
-        </form>
-        <div id="tasksContainer"></div>
-        <!-- Table to Display User's Tasks -->
-        <h2>Your Tasks</h2>
-        <table id="tasksTable">
-            <thead>
-                <tr>
-                    <th>Task ID</th>
-                    <th>Task Title</th>
-                    <th>Task Description</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="tasksTableBody">
-                <!-- Tasks will be dynamically added here -->
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="header_container">
+            <div class="col-lg-10 col-md-10 col-sm-12 white">
+                <h1>MentorMe - Send Tasks</h1>
+            </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white">
+                <div class="icon_container">
+                    <i class="material-icons" id="homeBtn">home</i>
+                    <i class="material-icons" id="orgchartBtn">bar_chart</i>
+                    <i class="material-icons" onclick="location.href='SendTasks.html';">assignment</i>
+                    <i class="material-icons" onclick="location.href='ManageUsers.html';"id>group</i>
+                    <i class="material-icons" id="logoutBtn">logout</i>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- Menu for mobile view -->
     <div class="row">
         <div class="col-lg-00 col-md-00 col-sm-12 white">
             <div class="button_container">
-                <button id="homeBtnMobile">Home</button>
+                <button id="orgchartBtnMobile">OrgChart</button>
                 <button id="logoutBtnMobile">Logout</button>
+                
+            </div>
+        </div>
+    </div>
+    <!-- Send Tasks -->
+    <div class="row">
+        <div class="content_container">
+            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
+            <div class="col-lg-08 col-md-08 col-sm-12 white">
+                <h1>Send Tasks</h1>
+                <form id="sendTasksForm">
+                    <label for="taskTitle">Task Title:</label>
+                    <input type="text" id="taskTitle" name="taskTitle">
+                    <label for="taskDescription">Task Description:</label>
+                    <textarea id="taskDescription" name="taskDescription"></textarea>
+                    <label for="menteeId">Assign to Mentee:</label>
+                    <input type="text" id="menteeId" name="menteeId">
+                    <label for="dueDate">Due Date:</label>
+                    <input type="date" id="dueDate" name="dueDate">
+                    <button type="submit">Send Task</button>
+                </form>
+                <div id="tasksContainer"></div>
+                <!-- Table to Display User's Tasks -->
+                <h2>Your Tasks</h2>
+                <table id="tasksTable">
+                    <thead>
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Task Title</th>
+                            <th>Task Description</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasksTableBody">
+                        <!-- Tasks will be dynamically added here -->
+                    </tbody>
+                </table>
+                    </div>
+            <div class="col-lg-02 col-md-02 col-sm-00 white"></div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 white">
+            <p>© 2024 MentorMe, Inc.</p>
+        </div>
+    </div>
     <script src="main.js"></script>
 </body>
 </html>
+
